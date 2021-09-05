@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31612.314
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSMoreland.ArdBorugh.Api.ConsoleApp", "TSMoreland.ArdBorugh.Api.ConsoleApp\TSMoreland.ArdBorugh.Api.ConsoleApp.csproj", "{2BDEEA09-69DB-4064-AADB-E21F2F6B23ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7CCE5F98-D05B-49CB-AE89-FB9C7AC30AA9}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2BDEEA09-69DB-4064-AADB-E21F2F6B23ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BDEEA09-69DB-4064-AADB-E21F2F6B23ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BDEEA09-69DB-4064-AADB-E21F2F6B23ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BDEEA09-69DB-4064-AADB-E21F2F6B23ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D9E3F405-FBDC-45A3-93E1-2BB96BA161A7}
+	EndGlobalSection
+EndGlobal
