@@ -1,11 +1,17 @@
-name: CI Build
+name: REST DTO CI Build
 
 on:
   push:
     branches: [ main ]
+    paths:
+    - rest-dto/**
+    - .github/workflows/rest-dto.yml
   pull_request:
     branches: [ main ]
-
+    paths:
+    - rest-dto/**
+    - .github/workflows/rest-dto.yml
+    
 jobs:
   build:
 
@@ -19,7 +25,10 @@ jobs:
         dotnet-version: 5.0.x
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: rest-dto
     - name: Build
       run: dotnet build --no-restore
+      working-directory: rest-dto
     - name: Test
       run: dotnet test --no-build --verbosity normal
+      working-directory: rest-dto
