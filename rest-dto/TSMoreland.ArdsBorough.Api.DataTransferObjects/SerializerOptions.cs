@@ -18,9 +18,15 @@ using System.Text.Json.Serialization;
 
 namespace TSMoreland.ArdsBorough.Api.DataTransferObjects;
 
+/// <summary>
+/// Serialization options used by the server provided to allow client APIs to match
+/// </summary>
 public static class SerializerOptions
 {
     private static readonly Lazy<JsonSerializerOptions> _options = new(BuildJsonSerializerOptions);
+    /// <summary>
+    /// Options used by the server 
+    /// </summary>
     public static JsonSerializerOptions Options => _options.Value;
 
     /// <summary>
@@ -39,6 +45,9 @@ public static class SerializerOptions
         return options;
     }
 
+    /// <summary>
+    /// updates <paramref name="options"/> converters used by <see cref="Options"/>
+    /// </summary>
     public static JsonSerializerOptions AddDataTransferObjectConverters(this JsonSerializerOptions options)
     {
         if (options == null)
