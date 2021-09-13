@@ -28,6 +28,8 @@ public sealed record BinCollectionDateDetails(BinType BinType, DateOnly? NextCol
     /// <summary>
     /// Bin Type
     /// </summary>
+    /// <example>Blue</example>
+    [Required]
     public BinType BinType { get; init; } = BinType;
 
     /// <summary>
@@ -40,6 +42,7 @@ public sealed record BinCollectionDateDetails(BinType BinType, DateOnly? NextCol
     /// Day of Week
     /// </summary>
     /// <example>monday</example>
+    [Required]
     public DayOfWeek? DayOfWeek { get; init; } = DayOfWeek;
 
     /// <summary>
