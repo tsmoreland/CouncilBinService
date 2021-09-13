@@ -28,14 +28,14 @@ public sealed record BinCollectionDateDetails(BinType BinType, DateOnly? NextCol
     /// <summary>
     /// Bin Type
     /// </summary>
-    /// <example>Blue</example>
+    /// <example>blue</example>
     [Required]
     public BinType BinType { get; init; } = BinType;
 
     /// <summary>
     /// Next Collection Date
     /// </summary>
-    /// <example></example>
+    /// <example>Thu, 12 May 2005 00:00:00 GMT</example>
     public DateOnly? NextCollection { get; init; } = NextCollection;
 
     /// <summary>
