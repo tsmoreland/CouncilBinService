@@ -8,10 +8,10 @@ namespace TSMoreland.ArdsBorough.Api.DataTransferObjects.Converters;
 /// <summary>
 /// <see cref="DateOnly"/> to RFC1123 Converter
 /// </summary>
-public sealed class DateOnlyToRfc1123Converter : JsonConverter<DateOnly>
+public sealed class NullableDateOnlyToRfc1123Converter : JsonConverter<DateOnly?>
 {
     /// <inheritdoc/>
-    public override DateOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override DateOnly? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.String)
         {
@@ -32,8 +32,8 @@ public sealed class DateOnlyToRfc1123Converter : JsonConverter<DateOnly>
     }
 
     /// <inheritdoc/>
-    public override void Write(Utf8JsonWriter writer, DateOnly value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, DateOnly? value, JsonSerializerOptions options)
     {
-        writer.WriteStringValue(value.ToDateTime(new TimeOnly()).ToString("r"));
+        writer.WriteStringValue(value?.ToDateTime(new TimeOnly()).ToString("r"));
     }
 }
