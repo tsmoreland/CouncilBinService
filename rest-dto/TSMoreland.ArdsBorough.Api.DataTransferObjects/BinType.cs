@@ -10,37 +10,31 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TSMoreland.ArdsBorough.Api.DataTransferObjects
+namespace TSMoreland.ArdsBorough.Api.DataTransferObjects;
+
+/// <summary>
+/// Type of Bin 
+/// </summary>
+public enum BinType
 {
     /// <summary>
-    /// Type of Bin 
+    /// General Waste
     /// </summary>
-    public enum BinType
-    {
-        /// <summary>
-        /// General Waste
-        /// </summary>
-        Black,
+    Black,
 
-        /// <summary>
-        /// Compostable
-        /// </summary>
-        Brown,
+    /// <summary>
+    /// Compostable
+    /// </summary>
+    Brown,
 
-        /// <summary>
-        /// Recycling
-        /// </summary>
-        Blue,
+    /// <summary>
+    /// Recycling
+    /// </summary>
+    Blue,
 
-        /// <summary>
-        /// Glass 
-        /// </summary>
-        Glass,
-    }
+    /// <summary>
+    /// Glass 
+    /// </summary>
+    Glass,
 }

@@ -15,6 +15,7 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TSMoreland.ArdsBorough.Api.DataTransferObjects.Converters;
 
 namespace TSMoreland.ArdsBorough.Api.DataTransferObjects;
 
@@ -34,15 +35,14 @@ public static class SerializerOptions
     /// </summary>
     public static JsonSerializerOptions BuildJsonSerializerOptions()
     {
-        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+        return new JsonSerializerOptions(JsonSerializerDefaults.Web)
         {
             AllowTrailingCommas = true,
             PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
 
-        return options;
+        }.AddDataTransferObjectConverters();
     }
 
     /// <summary>
@@ -58,6 +58,7 @@ public static class SerializerOptions
         if (!options.Converters.OfType<JsonStringEnumConverter>().Any())
         {
             options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+            options.Converters.Add(new NullableDateOnlyToRfc1123Converter());
         }
 
         return options;
