@@ -9,10 +9,31 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.Abstractions\TSMoreland.ArdsBorough.Api.WebServiceFacade.Abstractions.csproj" />
+    <ProjectReference Include="..\TSMoreland.WebApi.Middleware\TSMoreland.WebApi.Middleware.csproj" />
   </ItemGroup>
+
+  <!-- 
+  used in conjuction with <CopyToOutputDirecotyr>lib/$(TargetFramework)/*.xml</...> between <PackageReference ...></PackageReference> to copy XML doc file
+  to output path where it can then be used by Swashbuckle
+  -->
+  <Target Name="CopyXMLFromPackagesForBuild" AfterTargets="Build">
+	  <ItemGroup>
+  		<PackageReferenceFiles Condition="%(PackageReference.CopyToOutputDirectory) != ''" Include="$(NugetPackageRoot)$([MSBuild]::Escape('%(PackageReference.Identity)').ToLower())/%(PackageReference.Version)/%(PackageReference.CopyToOutputDirectory)" />
+  	</ItemGroup>
+  	<Copy SourceFiles="@(PackageReferenceFiles)" DestinationFolder="$(OutDir)" />
+  </Target>
+  
+  <Target Name="CopyXMLFromPackagesForPublish" BeforeTargets="PrepareForPublish">
+  	<ItemGroup>
+  		<PackageReferenceFiles Condition="%(PackageReference.CopyToOutputDirectory) != ''" Include="$(NugetPackageRoot)$([MSBuild]::Escape('%(PackageReference.Identity)').ToLower())/%(PackageReference.Version)/%(PackageReference.CopyToOutputDirectory)" />
+  	</ItemGroup>
+  	<Copy SourceFiles="@(PackageReferenceFiles)" DestinationFolder="$(PublishDir)" />
+  </Target>
 
 </Project>
