@@ -21,7 +21,7 @@ public class BinsController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public IActionResult GetBinType([FromRoute] string postcode)
     {
-        _logger.LogInformation("Query Bin for {postcode}", postcode);
+        _logger.LogInformation("Query Bin for {postcode}", postcode.Replace('\r', '_').Replace('\n', '_'));
         return Ok("blue");
     }
 }
