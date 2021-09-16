@@ -1,6 +1,7 @@
 ﻿using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using static TSMoreland.ArdsBourgh.Api.App.Helpers.LogSanitizer;
 
 namespace TSMoreland.ArdsBourgh.Api.App.Controllers;
 
@@ -21,7 +22,7 @@ public class BinsController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public IActionResult GetBinType([FromRoute] string postcode)
     {
-        _logger.LogInformation("Query Bin for {postcode}", postcode.Replace('\r', '_').Replace('\n', '_'));
+        _logger.LogInformation("Query Bin for {postcode}", Sanitize(postcode));
         return Ok("blue");
     }
 }
