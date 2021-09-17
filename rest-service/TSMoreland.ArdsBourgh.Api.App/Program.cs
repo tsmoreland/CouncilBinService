@@ -1,33 +1,34 @@
-using System.Text.Json;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.DependencyInjection;
-using TSMoreland.WebApi.Middleware;
+using System.IO;
+using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using TSMoreland.ArdsBourgh.Api.App;
 
-var builder = WebApplication.CreateBuilder(args);
+var appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+if (appPath is { Length: >0 })
+{
+    Directory.SetCurrentDirectory(appPath);
+}
 
-// Add services to the container.
-builder.Services
-    .AddControllers(options =>
+var config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
+    .AddUserSecrets(typeof(Program).Assembly, optional: true)
+    .Build();
+
+
+Host.CreateDefaultBuilder(args)
+    .ConfigureWebHostDefaults(webBuilder =>
     {
-        options.OutputFormatters.RemoveType<StringOutputFormatter>();
+        webBuilder.UseStartup<Startup>();
+        webBuilder.UseKestrel();
     })
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    });
-
-
-var app = builder.Build();
-
-app.UseCorrelationId();
-app.UseExceptionHandler();
-app.UseRouting();
-
-app.UseAuthorization();
-app.UseAuthentication();
-
-app.MapRazorPages();
-
-app.Run();
+    .ConfigureLogging(loggingBuilder =>
+        loggingBuilder
+            .AddConfiguration(config)
+            .AddConsole()
+            .AddDebug())
+    .Build()
+    .Run();
