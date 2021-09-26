@@ -1,4 +1,4 @@
-﻿namespace TSMoreland.ArdsBourgh.Api.App.Helpers
+﻿namespace TSMoreland.ArdsBorough.Api.App.Helpers
 {
     public static class LogSanitizer
     {
