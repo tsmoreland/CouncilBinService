@@ -23,7 +23,17 @@ public class BinsController : ControllerBase
     [Route("{postcode}/{houseNumber}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    public IActionResult GetNextType([FromRoute] string postcode, [FromRoute] int houseNumber)
+    public IActionResult GetThisWeeksType([FromRoute] string postcode, [FromRoute] int houseNumber)
+    {
+        _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", Sanitize(postcode), houseNumber);
+        return Ok("blue");
+    }
+
+    [HttpGet]
+    [Route("{postcode}/{houseNumber}/details")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public IActionResult GetFullDetailsForThisWeek([FromRoute] string postcode, [FromRoute] int houseNumber)
     {
         _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", Sanitize(postcode), houseNumber);
         return Ok("blue");
