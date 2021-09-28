@@ -13,9 +13,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TSMoreland.ArdsBorough.Api.WebServiceFacade.DataTransferObjects;
 
 namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Abstractions.Contracts;
 
@@ -24,4 +22,5 @@ namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Abstractions.Contracts;
 /// </summary>
 public interface IWebServiceFacade
 {
+    IEnumerable<RoundInfo> GetRoundsForDate(DateOnly date);
 }

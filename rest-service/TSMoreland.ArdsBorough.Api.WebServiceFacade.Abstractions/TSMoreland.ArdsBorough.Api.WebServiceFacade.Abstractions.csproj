@@ -5,4 +5,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.DataTransferObjects\TSMoreland.ArdsBorough.Api.WebServiceFacade.DataTransferObjects.csproj" />
+  </ItemGroup>
+
 </Project>
