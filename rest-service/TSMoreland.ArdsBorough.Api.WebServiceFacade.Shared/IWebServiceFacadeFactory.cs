@@ -12,15 +12,35 @@
 // 
 
 using System;
-using System.Collections.Generic;
-using TSMoreland.ArdsBorough.Api.WebServiceFacade.DataTransferObjects;
 
-namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Abstractions.Contracts;
+namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared;
 
 /// <summary>
-/// Facade around external webservice API
+/// Factory producing <see cref="IWebServiceFacade"/> instances.
 /// </summary>
-public interface IWebServiceFacade
+public interface IWebServiceFacadeFactory
 {
-    IEnumerable<RoundInfo> GetRoundsForDate(DateOnly date);
+    /// <summary>
+    /// Constructs an instance of <see cref="IWebServiceFacade"/> using
+    /// <paramref name="username"/> and <paramref name="password"/>
+    /// for authorization
+    /// </summary>
+    /// <param name="username">username used to authorize request</param>
+    /// <param name="password">password used to authorize requed</param>
+    /// <returns>an instance of <see cref="IWebServiceFacade"/></returns>
+    /// <exception cref="ArgumentException">
+    /// <list type="bullet">
+    ///   <item>
+    ///     <description>
+    ///     if <paramref name="username"/> is <see langword="null"/> or <see cref="string.Empty"/>
+    ///     </description>
+    ///   </item>
+    ///   <item>
+    ///     <description>
+    ///     if <paramref name="password"/> is <see langword="null"/> or <see cref="string.Empty"/>
+    ///     </description>
+    ///   </item>
+    /// </list>
+    /// </exception>
+    IWebServiceFacade Build(string username, string password);
 }

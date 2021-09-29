@@ -13,38 +13,22 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
-namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Abstractions.Contracts;
+namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared;
 
 /// <summary>
-/// Factory producing <see cref="IWebServiceFacade"/> instances.
+/// Facade around external webservice API
 /// </summary>
-public interface IWebServiceFacadeFactory
+public interface IWebServiceFacade
 {
     /// <summary>
-    /// Constructs an instance of <see cref="IWebServiceFacade"/> using
-    /// <paramref name="username"/> and <paramref name="password"/>
-    /// for authorization
+    /// 
     /// </summary>
-    /// <param name="username">username used to authorize request</param>
-    /// <param name="password">password used to authorize requed</param>
-    /// <returns>an instance of <see cref="IWebServiceFacade"/></returns>
-    /// <exception cref="ArgumentException">
-    /// <list type="bullet">
-    ///   <item>
-    ///     <description>
-    ///     if <paramref name="username"/> is <see langword="null"/> or <see cref="string.Empty"/>
-    ///     </description>
-    ///   </item>
-    ///   <item>
-    ///     <description>
-    ///     if <paramref name="password"/> is <see langword="null"/> or <see cref="string.Empty"/>
-    ///     </description>
-    ///   </item>
-    /// </list>
-    /// </exception>
-    IWebServiceFacade Build(string username, string password);
+    /// <param name="postcode"></param>
+    /// <param name="houseNumber"></param>
+    /// <param name="date"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    IAsyncEnumerable<RoundInfo> GetRoundsForDate(string postcode, int houseNumber, DateOnly date, CancellationToken cancellationToken);
 }
