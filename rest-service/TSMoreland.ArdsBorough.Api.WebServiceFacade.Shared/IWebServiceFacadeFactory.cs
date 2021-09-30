@@ -22,25 +22,13 @@ public interface IWebServiceFacadeFactory
 {
     /// <summary>
     /// Constructs an instance of <see cref="IWebServiceFacade"/> using
-    /// <paramref name="username"/> and <paramref name="password"/>
+    /// <paramref name="apiSecret"/> 
     /// for authorization
     /// </summary>
-    /// <param name="username">username used to authorize request</param>
-    /// <param name="password">password used to authorize requed</param>
+    /// <param name="apiSecret">secret used to authorize request</param>
     /// <returns>an instance of <see cref="IWebServiceFacade"/></returns>
     /// <exception cref="ArgumentException">
-    /// <list type="bullet">
-    ///   <item>
-    ///     <description>
-    ///     if <paramref name="username"/> is <see langword="null"/> or <see cref="string.Empty"/>
-    ///     </description>
-    ///   </item>
-    ///   <item>
-    ///     <description>
-    ///     if <paramref name="password"/> is <see langword="null"/> or <see cref="string.Empty"/>
-    ///     </description>
-    ///   </item>
-    /// </list>
+    ///if <paramref name="apiSecret"/> is <see langword="null"/> or <see cref="string.Empty"/>
     /// </exception>
-    IWebServiceFacade Build(string username, string password);
+    IWebServiceFacade Build(string apiSecret);
 }

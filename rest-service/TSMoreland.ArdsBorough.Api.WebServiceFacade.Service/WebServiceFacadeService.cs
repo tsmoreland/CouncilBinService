@@ -1,8 +1,10 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Xml.Linq;
 using ArdsBorough.WebService.External;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Service;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared;
@@ -23,7 +25,7 @@ public sealed class WebServiceFacadeService : IWebServiceFacade
     }
 
     /// <inheritdoc/>
-    public async IAsyncEnumerable<RoundInfo> GetRoundsForDate(string postcode, int houseNumber, DateOnly date, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<string> GetRoundsForDate(string postcode, int houseNumber, DateOnly date, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var (council, urpn) = await _urpnRepository.GetCouncilAndURPNFromAddressAsync(houseNumber, postcode, cancellationToken);
 
@@ -34,12 +36,22 @@ public sealed class WebServiceFacadeService : IWebServiceFacade
             yield break;
         }
 
-        // sample output: Grey Bin: Mon 27 Sep then every alternate Mon 
-        // pass to RoundInfo domain object (different name?) and let that handle the parsing, even if it's just a static functional method,
-        // putting it in core highlights the primary test area
+        foreach (var node in xmlNode.ChildNodes)
+        {
+            // ... to do ..
+        }
 
+        var document = XDocument.Parse(xmlNode.InnerXml);
+        var row = document.Descendants("Row").FirstOrDefault();
+        if (row is null)
+        {
+            yield break;
+        }
 
-
-        yield break;
+        foreach (var child in row.Descendants())
+        {
+            // format: Grey Bin: Mon 27 Sep then every alternate Mon 
+            yield return child.Value;
+        }
     }
 }

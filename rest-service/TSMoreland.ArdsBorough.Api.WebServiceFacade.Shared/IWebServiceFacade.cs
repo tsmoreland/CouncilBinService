@@ -23,12 +23,15 @@ namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared;
 public interface IWebServiceFacade
 {
     /// <summary>
-    /// 
+    /// get collection round details for the current date, this will include date details for each of the collected bin type
+    /// each as a different round
     /// </summary>
-    /// <param name="postcode"></param>
-    /// <param name="houseNumber"></param>
-    /// <param name="date"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    IAsyncEnumerable<RoundInfo> GetRoundsForDate(string postcode, int houseNumber, DateOnly date, CancellationToken cancellationToken);
+    /// <param name="postcode">address postcode used to get collection details for</param>
+    /// <param name="houseNumber">house number which may contributed to address used to get collection details for</param>
+    /// <param name="date">the date used to check</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>
+    /// collection of strings representing the different bin collection details for the given date
+    /// </returns>
+    IAsyncEnumerable<string> GetRoundsForDate(string postcode, int houseNumber, DateOnly date, CancellationToken cancellationToken);
 }
