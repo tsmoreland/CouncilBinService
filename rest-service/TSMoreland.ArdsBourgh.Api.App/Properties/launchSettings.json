@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "TSMoreland.ArdsBourgh.Api.App": {
+    "TSMoreland.ArdsBorough.Api.App": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

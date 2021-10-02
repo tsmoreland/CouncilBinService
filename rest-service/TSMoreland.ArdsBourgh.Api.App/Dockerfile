@@ -7,16 +7,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["TSMoreland.ArdsBourgh.Api.App/TSMoreland.ArdsBourgh.Api.App.csproj", "TSMoreland.ArdsBourgh.Api.App/"]
-RUN dotnet restore "TSMoreland.ArdsBourgh.Api.App/TSMoreland.ArdsBourgh.Api.App.csproj"
+COPY ["TSMoreland.ArdsBorough.Api.App/TSMoreland.ArdsBorough.Api.App.csproj", "TSMoreland.ArdsBorough.Api.App/"]
+RUN dotnet restore "TSMoreland.ArdsBorough.Api.App/TSMoreland.ArdsBorough.Api.App.csproj"
 COPY . .
-WORKDIR "/src/TSMoreland.ArdsBourgh.Api.App"
-RUN dotnet build "TSMoreland.ArdsBourgh.Api.App.csproj" -c Release -o /app/build
+WORKDIR "/src/TSMoreland.ArdsBorough.Api.App"
+RUN dotnet build "TSMoreland.ArdsBorough.Api.App.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "TSMoreland.ArdsBourgh.Api.App.csproj" -c Release -o /app/publish
+RUN dotnet publish "TSMoreland.ArdsBorough.Api.App.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "TSMoreland.ArdsBourgh.Api.App.dll"]
+ENTRYPOINT ["dotnet", "TSMoreland.ArdsBorough.Api.App.dll"]

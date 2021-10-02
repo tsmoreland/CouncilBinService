@@ -8,18 +8,17 @@ namespace TSMoreland.ArdsBorough.Api.App.Controllers;
 /// <summary>
 /// based on <a href="https://docs.microsoft.com/en-us/aspnet/core/web-api/handle-errors?view=aspnetcore-6.0">Handle errors in ASP.NET Core web APIs</a>
 /// </summary>
-[Route("api/[controller]")]
-[ApiVersion("1.0")]
+[ApiVersion("1")]
 [ApiController]
 public class ErrorController : ControllerBase
 {
-    [Route("/error")]
+    [Route("api/error")]
     public IActionResult Error()
     {
         return Problem();
     }
 
-    [Route("/error-dev")]
+    [Route("api/error-dev")]
     public IActionResult ErrorLocalDevelopment([FromServices] IWebHostEnvironment webHostEnvironment)
     {
         if (webHostEnvironment.EnvironmentName != "Development")

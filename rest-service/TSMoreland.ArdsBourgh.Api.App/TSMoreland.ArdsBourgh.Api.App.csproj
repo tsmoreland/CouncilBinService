@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\rest-dto\TSMoreland.ArdsBorough.Api.DataTransferObjects\TSMoreland.ArdsBorough.Api.DataTransferObjects.csproj" />
-    <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.Abstractions\TSMoreland.ArdsBorough.Api.WebServiceFacade.Abstractions.csproj" />
+    <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection\TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection.csproj" />
     <ProjectReference Include="..\TSMoreland.WebApi.Middleware\TSMoreland.WebApi.Middleware.csproj" />
   </ItemGroup>
 

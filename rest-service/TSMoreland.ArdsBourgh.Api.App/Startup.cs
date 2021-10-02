@@ -11,8 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TSMoreland.WebApi.Middleware;
+using TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection;
 
-namespace TSMoreland.ArdsBourgh.Api.App;
+namespace TSMoreland.ArdsBorough.Api.App;
 
 public class Startup
 {
@@ -48,6 +49,7 @@ public class Startup
 
                     return result;
                 };
+
             })
             .AddJsonOptions(options =>
             {
@@ -56,22 +58,19 @@ public class Startup
             });
 
         services.AddHttpContextAccessor();
-        services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VV");
+        services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'V");
         services.AddApiVersioning(options => options.ApiVersionReader = new UrlSegmentApiVersionReader());
+
+        services.AddWebServiceFacade();
     }
 
     public void Configure(IApplicationBuilder app)
     {
         app.UseCorrelationId();
 
-        if (Environment.IsDevelopment())
-        {
-            app.UseExceptionHandler("/error-dev");
-        }
-        else
-        {
-            app.UseExceptionHandler("/error");
-        }
+        app.UseExceptionHandler(Environment.IsDevelopment() 
+            ? "/api/error-dev" 
+            : "/api/error");
 
         app.UseRouting();
 
