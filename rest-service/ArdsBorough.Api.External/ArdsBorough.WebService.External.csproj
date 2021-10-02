@@ -12,8 +12,4 @@
     <PackageReference Include="System.ServiceModel.Security" Version="4.8.*" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.Abstractions\TSMoreland.ArdsBorough.Api.WebServiceFacade.Abstractions.csproj" />
-  </ItemGroup>
-
 </Project>
