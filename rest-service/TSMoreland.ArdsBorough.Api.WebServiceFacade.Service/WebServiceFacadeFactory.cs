@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using ArdsBorough.WebService.External;
+using TSMoreland.ArdsBorough.Api.WebServiceFacade.Infrastructure;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared;
 
 namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Service;
@@ -22,9 +23,9 @@ public sealed class WebServiceFacadeFactory : IWebServiceFacadeFactory
     {
         var urpnRepository = _serviceProvider.GetService<UrpnRepository>() ??
                              throw new Exception("customize this to service provider exception");
-        var soapService = _serviceProvider.GetService<WebService2Soap>() ??
+        var soapServiceFactory = _serviceProvider.GetService<WebService2SoapFactory>() ??
                           throw new Exception("customize this to service provider exception");
 
-        return new WebServiceFacadeService(apiSecret, urpnRepository, soapService);
+        return new WebServiceFacadeService(apiSecret, urpnRepository, soapServiceFactory);
     }
 }
