@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace TSMoreland.ArdsBorough.Shared;
+namespace TSMoreland.ArdsBorough.Bins.Shared;
 
 [Serializable]
 public sealed class AddressNotFoundException : Exception

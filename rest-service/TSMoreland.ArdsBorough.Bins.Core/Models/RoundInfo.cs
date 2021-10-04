@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TSMoreland.ArdsBorough.Shared;
+using TSMoreland.ArdsBorough.Bins.Shared;
 
-namespace TSMoreland.ArdsBorough.Core.Models;
+namespace TSMoreland.ArdsBorough.Bins.Core.Models;
 
 public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequency)
 {

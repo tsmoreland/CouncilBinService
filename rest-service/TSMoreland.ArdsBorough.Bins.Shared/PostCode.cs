@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace TSMoreland.ArdsBorough.Shared;
+namespace TSMoreland.ArdsBorough.Bins.Shared;
 
 public readonly record struct PostCode : IEquatable<PostCode>
 {
