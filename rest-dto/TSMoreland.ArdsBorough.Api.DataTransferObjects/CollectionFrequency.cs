@@ -16,7 +16,7 @@ namespace TSMoreland.ArdsBorough.Api.DataTransferObjects;
 /// <summary>
 /// Frequence of Bin collection
 /// </summary>
-public enum  CollectionFrequency
+public enum CollectionFrequency
 {
     /// <summary>
     /// No pickup at this address
@@ -36,4 +36,4 @@ public enum  CollectionFrequency
     /// Every 4 weeks (or once a month)
     /// </summary>
     EveryFourWeeks,
-    }
+}
