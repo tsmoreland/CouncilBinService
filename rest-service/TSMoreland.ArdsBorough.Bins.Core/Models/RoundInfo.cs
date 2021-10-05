@@ -45,19 +45,24 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
 
         return None;
 
-        static (bool Succcess, string RawBinType, string RawDate, string RawFrequency) TrySplit(string source)
+        static (bool Succless, string RawBinType, string RawDate, string RawFrequency) TrySplit(string source)
         {
-            var indexOfBinColon = source.IndexOf("BIN: ", StringComparison.InvariantCultureIgnoreCase);
+            if (source is not { Length: >0 })
+            {
+                return (false, string.Empty, string.Empty, string.Empty);
+            }
+
+            var indexOfColon = source.IndexOf(": ", StringComparison.InvariantCultureIgnoreCase);
             var indexOfThenEvery = source.IndexOf("THEN EVERY", StringComparison.InvariantCultureIgnoreCase);
-            if (indexOfBinColon == -1 || indexOfThenEvery == -1)
+            if (indexOfColon == -1 || indexOfThenEvery == -1)
             {
                 return (false, string.Empty, string.Empty, string.Empty);
             }
 
             return (
                 true,
-                source[..indexOfBinColon],
-                source[(indexOfBinColon + "BIN: ".Length)..indexOfThenEvery],
+                source[..indexOfColon],
+                source[(indexOfColon + "BIN: ".Length)..indexOfThenEvery],
                 source[(indexOfThenEvery + "THEN EVERY".Length)..]
             );
 
@@ -65,7 +70,18 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
         static bool TryParseBinType(string source, out BinType binType)
         {
             binType = BinType.Unknown;
-            return false;
+
+            bool success;
+            (success, binType) = source.Trim().ToUpperInvariant() switch 
+            {
+                "GREY BIN" => (true, BinType.Black),
+                "BLUE BIN" => (true, BinType.Blue),
+                "Green /Brown BIN" => (true, BinType.Brown),
+                "GLASS COLLECTION BOX" => (true, BinType.Glass),
+                _ => (false, BinType.Unknown),
+            };
+
+            return success;
         }
         static bool TryParseDate(string source, out DateOnly date)
         {
