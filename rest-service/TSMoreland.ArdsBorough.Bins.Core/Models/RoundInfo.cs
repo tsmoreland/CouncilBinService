@@ -100,13 +100,8 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
                 return true;
             }
 
-            if (!DateOnly.TryParseExact(source.Trim(), "ddd dd MMM", out date))
-            {
-                return false;
-            }
-
-            return true;
-
+            source = source.Trim();
+            return DateOnly.TryParseExact(source, "ddd d MMM", out date);
         }
         static bool TryParseFrequency(string source, out TimeSpan frequency)
         {
@@ -117,13 +112,13 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
                 return true;
             }
 
-            if (source.Contains("EVERY FOUR", StringComparison.CurrentCultureIgnoreCase))
+            if (!source.StartsWith("FOURTH", StringComparison.InvariantCultureIgnoreCase))
             {
-                frequency = TimeSpan.FromDays(28);
-                return true;
+                return false;
             }
 
-            return false;
+            frequency = TimeSpan.FromDays(28);
+            return true;
         }
 
     }
