@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -12,7 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ArdsBorough.Api.External\ArdsBorough.WebService.External.csproj" />
-    <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.Service\TSMoreland.ArdsBorough.Api.WebServiceFacade.Service.csproj" />
+    <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.Infrastructure\TSMoreland.ArdsBorough.Api.WebServiceFacade.Infrastructure.csproj" />
+    <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.Services\TSMoreland.ArdsBorough.Api.WebServiceFacade.Services.csproj" />
     <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared\TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared.csproj" />
   </ItemGroup>
 
