@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
             }
 
             var indexOfColon = source.IndexOf(": ", StringComparison.InvariantCultureIgnoreCase);
-            var indexOfThenEvery = source.IndexOf("THEN EVERY", StringComparison.InvariantCultureIgnoreCase);
+            var indexOfThenEvery = source.IndexOf("THEN EVERY ", StringComparison.InvariantCultureIgnoreCase);
             if (indexOfColon == -1 || indexOfThenEvery == -1)
             {
                 return (false, string.Empty, string.Empty, string.Empty);
@@ -62,8 +63,8 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
             return (
                 true,
                 source[..indexOfColon],
-                source[(indexOfColon + "BIN: ".Length)..indexOfThenEvery],
-                source[(indexOfThenEvery + "THEN EVERY".Length)..]
+                source[(indexOfColon + 1)..indexOfThenEvery],
+                source[(indexOfThenEvery + "THEN EVERY ".Length)..]
             );
 
         }
@@ -76,7 +77,7 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
             {
                 "GREY BIN" => (true, BinType.Black),
                 "BLUE BIN" => (true, BinType.Blue),
-                "Green /Brown BIN" => (true, BinType.Brown),
+                "GREEN /BROWN BIN" => (true, BinType.Brown),
                 "GLASS COLLECTION BOX" => (true, BinType.Glass),
                 _ => (false, BinType.Unknown),
             };
@@ -99,12 +100,11 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
                 return true;
             }
 
-            if (!DateOnly.TryParseExact(source, "ddd dd MMM", out date))
+            if (!DateOnly.TryParseExact(source.Trim(), "ddd dd MMM", out date))
             {
                 return false;
             }
 
-            date = new DateOnly(DateTime.Now.Year, date.Month, date.Day);
             return true;
 
         }
