@@ -8,7 +8,7 @@ using TSMoreland.ArdsBorough.Bins.Core.Models;
 using TSMoreland.ArdsBorough.Bins.Shared;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared;
 
-namespace TSMoreland.ArdsBorough.Service;
+namespace TSMoreland.ArdsBorough.Bins.Services;
 
 public sealed class BinCollectionService : IBinCollectionService
 {
