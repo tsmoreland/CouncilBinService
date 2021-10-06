@@ -8,7 +8,7 @@ using ArdsBorough.WebService.External;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Infrastructure;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared;
 
-namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Service;
+namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Services;
 
 public sealed class WebServiceFacadeFactory : IWebServiceFacadeFactory
 {

@@ -7,11 +7,11 @@ using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using ArdsBorough.WebService.External;
-using TSMoreland.ArdsBorough.Api.WebServiceFacade.Service;
+using TSMoreland.ArdsBorough.Api.WebServiceFacade.Services;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Infrastructure;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared;
 
-namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Service;
+namespace TSMoreland.ArdsBorough.Api.WebServiceFacade.Services;
 
 public sealed class WebServiceFacadeService : IWebServiceFacade
 {
