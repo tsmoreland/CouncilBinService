@@ -7,6 +7,7 @@ using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using ArdsBorough.WebService.External;
+using Microsoft.Extensions.Logging;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Services;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Infrastructure;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared;
@@ -17,9 +18,10 @@ public sealed class WebServiceFacadeService : IWebServiceFacade
 {
     private readonly string _apiSecret;
     private readonly UrpnRepository _urpnRepository;
+    private readonly ILogger<WebServiceFacadeService> _logger;
     private readonly WebService2Soap _soapApi;
 
-    public WebServiceFacadeService(string apiSecret, UrpnRepository urpnRepository, WebService2SoapFactory soapApiFactory)
+    public WebServiceFacadeService(string apiSecret, UrpnRepository urpnRepository, WebService2SoapFactory soapApiFactory, ILogger<WebServiceFacadeService> logger)
     {
         if (soapApiFactory == null!)
         {
@@ -28,6 +30,7 @@ public sealed class WebServiceFacadeService : IWebServiceFacade
 
         _apiSecret = apiSecret;
         _urpnRepository = urpnRepository ?? throw new ArgumentNullException(nameof(urpnRepository));
+        _logger = logger;
         _soapApi = soapApiFactory.Build();
     }
 
@@ -68,6 +71,7 @@ public sealed class WebServiceFacadeService : IWebServiceFacade
         foreach (var child in row.Descendants())
         {
             // format: Grey Bin: Mon 27 Sep then every alternate Mon 
+            _logger.LogInformation("{ExternalRoundInfo}", child.Value.Replace('\r', '_').Replace('\n', '_'));
             yield return child.Value;
         }
     }
