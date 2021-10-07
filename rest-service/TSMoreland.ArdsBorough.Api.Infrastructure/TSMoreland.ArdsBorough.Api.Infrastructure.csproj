@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="AutoMapper.Extensions.EnumMapping" Version="1.1.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\rest-dto\TSMoreland.ArdsBorough.Api.DataTransferObjects\TSMoreland.ArdsBorough.Api.DataTransferObjects.csproj" />
+    <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection\TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection.csproj" />
+    <ProjectReference Include="..\TSMoreland.ArdsBorough.Bins.DependencyInjection\TSMoreland.ArdsBorough.Bins.DependencyInjection.csproj" />
+  </ItemGroup>
+
+</Project>
