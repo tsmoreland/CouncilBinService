@@ -11,6 +11,8 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using System.Runtime.Serialization;
+
 namespace TSMoreland.ArdsBorough.Api.DataTransferObjects;
 
 /// <summary>
@@ -21,20 +23,24 @@ public enum BinType
     /// <summary>
     /// General Waste
     /// </summary>
+    [EnumMember(Value = "(Grey) Garbage/General Waste")]
     Black,
 
     /// <summary>
     /// Compostable
     /// </summary>
+    [EnumMember(Value = "(Brown/Green) Compost")]
     Brown,
 
     /// <summary>
     /// Recycling
     /// </summary>
+    [EnumMember(Value = "(Blue) Recycling")]
     Blue,
 
     /// <summary>
     /// Glass 
     /// </summary>
+    [EnumMember(Value = "Glass")]
     Glass,
 }
