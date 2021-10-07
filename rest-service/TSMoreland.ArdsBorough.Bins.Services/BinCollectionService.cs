@@ -24,12 +24,14 @@ public sealed class BinCollectionService : IBinCollectionService
     }
 
     /// <inheritdoc/>
-    public IAsyncEnumerable<(BinType Type, DayOfWeek Day)> FindNextBinCollectionInfoForAddress(int houseNumber, PostCode postCode, CancellationToken cancellationToken)
+    public IAsyncEnumerable<(BinType Type, DateOnly Date)> FindNextBinCollectionInfoForAddress(int houseNumber, PostCode postCode, CancellationToken cancellationToken)
     {
         return _webServiceFacade
             .GetRoundsForDate(postCode.Value, houseNumber, DateOnly.FromDateTime(DateTime.Now), cancellationToken)
             .Select(RoundInfo.ParseOrNone)
-            .Select(info => (info.Type, info.Collection.DayOfWeek))
+            .Where(info => info != RoundInfo.None)
+            .OrderBy(info => info.Collection)
+            .Select(info => (info.Type, info.Collection))
             .AsAsyncEnumerable();
     }
 }

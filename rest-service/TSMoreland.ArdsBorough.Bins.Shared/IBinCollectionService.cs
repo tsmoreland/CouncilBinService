@@ -18,5 +18,5 @@ public interface IBinCollectionService
     /// <exception cref="AddressNotFoundException">
     /// if address is invalid or cannot be found
     /// </exception>
-    IAsyncEnumerable<(BinType Type, DayOfWeek Day)> FindNextBinCollectionInfoForAddress(int houseNumber, PostCode postCode, CancellationToken cancellationToken);
+    IAsyncEnumerable<(BinType Type, DateOnly Date)> FindNextBinCollectionInfoForAddress(int houseNumber, PostCode postCode, CancellationToken cancellationToken);
 }
