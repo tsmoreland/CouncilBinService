@@ -2,7 +2,7 @@
 
 namespace TSMoreland.WebApi.Middleware;
 
-public static class CorrectionIdServiceCollectionExtensions
+public static class ApplicationBuilderExtensions
 {
     /// <summary>
     /// Adds the correction id middleware to the application request pipeline
@@ -11,4 +11,5 @@ public static class CorrectionIdServiceCollectionExtensions
     {
         return app.UseMiddleware<CorrelationIdMiddleware>();
     }
+
 }
