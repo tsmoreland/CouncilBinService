@@ -57,7 +57,6 @@ public class Startup
 
                     return result;
                 };
-
             })
             .AddJsonOptions(options =>
             {
@@ -94,6 +93,13 @@ public class Startup
         app.UseExceptionHandler(Environment.IsDevelopment() 
             ? "/api/error-dev" 
             : "/api/error");
+        
+        app.UseSwagger();
+        app.UseSwaggerUI(options =>
+        {
+            //options.SwaggerEndpoint($"../swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        });
 
         app.UseRouting();
 
