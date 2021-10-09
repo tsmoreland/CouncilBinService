@@ -13,12 +13,13 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.1" />
+    <PackageReference Include="System.Linq.Async" Version="5.0.0" />
     <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0-rc.1.21451.13" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\rest-dto\TSMoreland.ArdsBorough.Api.DataTransferObjects\TSMoreland.ArdsBorough.Api.DataTransferObjects.csproj" />
-    <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection\TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection.csproj" />
+    <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.Infrastructure\TSMoreland.ArdsBorough.Api.Infrastructure.csproj" />
     <ProjectReference Include="..\TSMoreland.WebApi.Middleware\TSMoreland.WebApi.Middleware.csproj" />
   </ItemGroup>
 

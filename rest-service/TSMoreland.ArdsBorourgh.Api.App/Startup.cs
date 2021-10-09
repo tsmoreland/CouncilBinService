@@ -1,6 +1,6 @@
-﻿using System;
-using System.Net.Mime;
+﻿using System.Net.Mime;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TSMoreland.WebApi.Middleware;
-using TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection;
+using TSMoreland.ArdsBorough.Api.Infrastructure;
 
 namespace TSMoreland.ArdsBorough.Api.App;
 
@@ -55,13 +55,14 @@ public class Startup
             {
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
         services.AddHttpContextAccessor();
         services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'V");
         services.AddApiVersioning(options => options.ApiVersionReader = new UrlSegmentApiVersionReader());
 
-        services.AddWebServiceFacade();
+        services.AddApiInfrastructure();
     }
 
     public void Configure(IApplicationBuilder app)

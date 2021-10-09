@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
 using System.Threading;
@@ -8,7 +7,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using TSMoreland.ArdsBorough.Api.DataTransferObjects.Response;
-using static TSMoreland.ArdsBorough.Api.App.Helpers.LogSanitizer;
 using BinsDomain = TSMoreland.ArdsBorough.Bins.Shared;
 using DTO = TSMoreland.ArdsBorough.Api.DataTransferObjects;
 
@@ -54,7 +52,7 @@ public class BinsController : ControllerBase
         var collection = await _binCollectionService
             .FindThisWeeksBinCollectionInfoForAddress(houseNumber, new BinsDomain.PostCode(postcode), cancellationToken)
             .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return Ok(collection);
     }
@@ -68,7 +66,7 @@ public class BinsController : ControllerBase
         var collection = await _binCollectionService
             .FindNextWeeksBinCollectionInfoForAddress(houseNumber, new BinsDomain.PostCode(postcode), cancellationToken)
             .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         return Ok(collection);
     }
@@ -79,7 +77,6 @@ public class BinsController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public IActionResult GetFullDetailsForThisWeek([FromRoute] string postcode, [FromRoute] int houseNumber)
     {
-        _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", BinsDomain.PostCode.ConvertOrNone(postcode), houseNumber);
         return Ok("blue");
     }
 
@@ -89,7 +86,6 @@ public class BinsController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public IActionResult GetNextDateForType([FromRoute] string postcode, [FromRoute] int houseNumber, [FromRoute] DTO.BinType binType)
     {
-        _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", BinsDomain.PostCode.ConvertOrNone(postcode), houseNumber);
         return Ok("blue");
     }
 
@@ -100,7 +96,6 @@ public class BinsController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public IActionResult GetCollectionPeriod([FromRoute] string postcode, [FromRoute] int houseNumber, [FromRoute] DTO.BinType binType)
     {
-        _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", BinsDomain.PostCode.ConvertOrNone(postcode), houseNumber);
         return Ok("blue");
     }
 }
