@@ -1,31 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using TSMoreland.ArdsBorough.Api.DataTransferObjects;
-using TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared;
+using TSMoreland.ArdsBorough.Api.DataTransferObjects.Response;
 using static TSMoreland.ArdsBorough.Api.App.Helpers.LogSanitizer;
+using BinsDomain = TSMoreland.ArdsBorough.Bins.Shared;
+using DTO = TSMoreland.ArdsBorough.Api.DataTransferObjects;
 
 namespace TSMoreland.ArdsBorough.Api.App.Controllers;
 
 [Route("api/v{version:apiVersion}/bins")]
-//[Route("api/bins")]
 [ApiVersion("1")]
 [ApiController]
 public class BinsController : ControllerBase
 {
-    private readonly IWebServiceFacadeFactory _webServiceFacadeFactory;
-    private readonly IConfiguration _configuration;
+    private readonly BinsDomain.IBinCollectionService _binCollectionService;
+    private readonly IMapper _mapper;
     private readonly ILogger<BinsController> _logger;
 
-    public BinsController(IWebServiceFacadeFactory webServiceFacadeFactory, IConfiguration configuration, ILogger<BinsController> logger)
+    public BinsController(BinsDomain.IBinCollectionService binCollectionService, IMapper mapper, ILogger<BinsController> logger)
     {
-        _webServiceFacadeFactory = webServiceFacadeFactory;
-        _configuration = configuration; // temporary
+        _binCollectionService = binCollectionService ?? throw new ArgumentNullException(nameof(binCollectionService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
     }
 
@@ -33,19 +34,43 @@ public class BinsController : ControllerBase
     [Route("{postcode}/{houseNumber:int}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> GetAllUpcoming([FromRoute] string postcode, [FromRoute] int houseNumber, CancellationToken cancellationToken)
+    {
+        var collections = await _binCollectionService
+            .FindBinCollectionInfoForAddress(houseNumber, new BinsDomain.PostCode(postcode), cancellationToken)
+            .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
+            .ToListAsync(cancellationToken);
+
+        return Ok(collections);
+    }
+
+
+    [HttpGet]
+    [Route("{postcode}/{houseNumber:int}/current")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
     public async Task<IActionResult> GetThisWeeksType([FromRoute] string postcode, [FromRoute] int houseNumber, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", Sanitize(postcode), houseNumber);
-        var secret = _configuration["test-data:secret"] ?? string.Empty;
-        var webService = _webServiceFacadeFactory.Build(secret);
+        var collection = await _binCollectionService
+            .FindThisWeeksBinCollectionInfoForAddress(houseNumber, new BinsDomain.PostCode(postcode), cancellationToken)
+            .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
+            .ToListAsync();
 
-        List<string> rounds = new();
-        await foreach (var round in webService.GetRoundsForDate(postcode, houseNumber, DateOnly.FromDateTime(DateTime.Now), cancellationToken))
-        {
-            rounds.Add(round);
-        }
+        return Ok(collection);
+    }
 
-        return Ok(rounds);
+    [HttpGet]
+    [Route("{postcode}/{houseNumber:int}/next")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> GetNextWeeksType([FromRoute] string postcode, [FromRoute] int houseNumber, CancellationToken cancellationToken)
+    {
+        var collection = await _binCollectionService
+            .FindNextWeeksBinCollectionInfoForAddress(houseNumber, new BinsDomain.PostCode(postcode), cancellationToken)
+            .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
+            .ToListAsync();
+
+        return Ok(collection);
     }
 
     [HttpGet]
@@ -54,7 +79,7 @@ public class BinsController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public IActionResult GetFullDetailsForThisWeek([FromRoute] string postcode, [FromRoute] int houseNumber)
     {
-        _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", Sanitize(postcode), houseNumber);
+        _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", BinsDomain.PostCode.ConvertOrNone(postcode), houseNumber);
         return Ok("blue");
     }
 
@@ -62,9 +87,9 @@ public class BinsController : ControllerBase
     [Route("{postcode}/{houseNumber}/{binType}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    public IActionResult GetNextDateForType([FromRoute] string postcode, [FromRoute] int houseNumber, [FromRoute] BinType binType)
+    public IActionResult GetNextDateForType([FromRoute] string postcode, [FromRoute] int houseNumber, [FromRoute] DTO.BinType binType)
     {
-        _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", Sanitize(postcode), houseNumber);
+        _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", BinsDomain.PostCode.ConvertOrNone(postcode), houseNumber);
         return Ok("blue");
     }
 
@@ -73,9 +98,9 @@ public class BinsController : ControllerBase
     [Route("{postcode}/{houseNumber}/{binType}/period")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    public IActionResult GetCollectionPeriod([FromRoute] string postcode, [FromRoute] int houseNumber, [FromRoute] BinType binType)
+    public IActionResult GetCollectionPeriod([FromRoute] string postcode, [FromRoute] int houseNumber, [FromRoute] DTO.BinType binType)
     {
-        _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", Sanitize(postcode), houseNumber);
+        _logger.LogInformation("Query Bin for {postcode} {HouseNumber}", BinsDomain.PostCode.ConvertOrNone(postcode), houseNumber);
         return Ok("blue");
     }
 }
