@@ -3,17 +3,18 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace TSMoreland.WebApi.Middleware.SwaggerFilters;
 
-public sealed class TrimApiVersionDocumentFilter : IDocumentFilter
+public sealed class ApplyApiVersionDocumentFilter : IDocumentFilter
 {
     /// <inheritdoc/>
     public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
     {
+
         var pathValues = swaggerDoc
             .Paths
             .Select(path =>
                 new
                 {
-                    Key = path.Key.Replace("/api/v{version}", string.Empty),
+                    Key = path.Key.Replace("/api/v{version}", $"/api/{context.DocumentName}"),
                     path.Value
                 });
         var paths = new OpenApiPaths();
