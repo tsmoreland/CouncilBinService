@@ -21,6 +21,7 @@ using Microsoft.OpenApi.Models;
 using TSMoreland.WebApi.Middleware;
 using TSMoreland.ArdsBorough.Api.Infrastructure;
 using TSMoreland.WebApi.Middleware.SwaggerFilters;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace TSMoreland.ArdsBorough.Api.App;
 
@@ -86,6 +87,7 @@ public class Startup
                         Version = version.ApiVersion.ToString()
                     });
             }
+
             options.DocInclusionPredicate((doc, descriptor) =>
             {
                 return descriptor
@@ -131,13 +133,26 @@ public class Startup
             ? "/api/error-dev" 
             : "/api/error");
         
-        app.UseSwagger();
+        app.UseSwagger(options =>
+        {
+            // explciit set of what the default should already be
+            options.RouteTemplate = "api/{documentName}/swagger.{json|yaml}";
+
+            options.PreSerializeFilters.Add((doc, request) =>
+            {
+                doc.Servers ??= new List<OpenApiServer>();
+                doc.Servers.Add(new OpenApiServer
+                {
+                    Url = $"{request.Scheme}://{request.Host.Value}/api/v{doc.Info.Version}"
+                });
+            });
+        });
         app.UseSwaggerUI(options =>
         {
             var apiVerionDescriptorProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
             foreach (var version in apiVerionDescriptorProvider.ApiVersionDescriptions)
             {
-                options.SwaggerEndpoint($"/swagger/{version.GroupName}/swagger.json", version.GroupName.ToUpperInvariant());
+                options.SwaggerEndpoint($"/api/{version.GroupName}/swagger.json", version.GroupName.ToUpperInvariant());
             }
         });
 

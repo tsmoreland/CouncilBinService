@@ -14,7 +14,8 @@ public sealed class ApplyApiVersionDocumentFilter : IDocumentFilter
             .Select(path =>
                 new
                 {
-                    Key = path.Key.Replace("/api/v{version}", $"/api/{context.DocumentName}"),
+                    // set value to empty string, valid if we set route template within UseSwagger
+                    Key = path.Key.Replace("/api/v{version}", string.Empty),
                     path.Value
                 });
         var paths = new OpenApiPaths();
