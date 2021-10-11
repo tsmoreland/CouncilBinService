@@ -10,14 +10,27 @@ namespace TSMoreland.ArdsBorough.Api.App.Controllers;
 /// </summary>
 [ApiVersion("1")]
 [ApiController]
+[ApiExplorerSettings(IgnoreApi = true)]
 public class ErrorController : ControllerBase
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
     [Route("api/error")]
     public IActionResult Error()
     {
         return Problem();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="webHostEnvironment"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    [HttpGet]
     [Route("api/error-dev")]
     public IActionResult ErrorLocalDevelopment([FromServices] IWebHostEnvironment webHostEnvironment)
     {
