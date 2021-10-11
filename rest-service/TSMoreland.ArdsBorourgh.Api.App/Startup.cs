@@ -1,4 +1,8 @@
-﻿using System.Net.Mime;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Mime;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -6,6 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -15,6 +20,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using TSMoreland.WebApi.Middleware;
 using TSMoreland.ArdsBorough.Api.Infrastructure;
+using TSMoreland.WebApi.Middleware.SwaggerFilters;
 
 namespace TSMoreland.ArdsBorough.Api.App;
 
@@ -80,7 +86,38 @@ public class Startup
                         Version = version.ApiVersion.ToString()
                     });
             }
+            options.DocInclusionPredicate((doc, descriptor) =>
+            {
+                return descriptor
+                    .ActionDescriptor
+                    .GetApiVersionModel(ApiVersionMapping.Explicit)
+                    .ImplementedApiVersions
+                    .Any(v => $"v{v}" == doc);
+            });
+            options.OperationFilter<DefaultReturnValuesOperationFilter>();
+            options.OperationFilter<RemoveVersionParameterOpertationFilter>();
+            options.DocumentFilter<ApplyApiVersionDocumentFilter>();
+
+            List<string> xmlFiles = new();
+            var entryAssembly = Assembly.GetEntryAssembly();
+            if (entryAssembly is not null)
+            {
+                xmlFiles.Add($"{entryAssembly.GetName().Name}.xml");
+            }
+            xmlFiles.Add($"{typeof(DataTransferObjects.BinType).Assembly.GetName().Name}.xml");
+
+            var existingFiles = xmlFiles
+                .Select(file => Path.Combine(AppContext.BaseDirectory, file))
+                .Where(File.Exists);
+            foreach (var file in existingFiles)
+            {
+                options.IncludeXmlComments(file);
+            }
         });
+
+        services.AddScoped<DefaultReturnValuesOperationFilter>();
+        services.AddScoped<RemoveVersionParameterOpertationFilter>();
+        services.AddScoped<ApplyApiVersionDocumentFilter>();
 
         services.AddApiInfrastructure();
     }
@@ -97,8 +134,11 @@ public class Startup
         app.UseSwagger();
         app.UseSwaggerUI(options =>
         {
-            //options.SwaggerEndpoint($"../swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+            var apiVerionDescriptorProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
+            foreach (var version in apiVerionDescriptorProvider.ApiVersionDescriptions)
+            {
+                options.SwaggerEndpoint($"/swagger/{version.GroupName}/swagger.json", version.GroupName.ToUpperInvariant());
+            }
         });
 
         app.UseRouting();
