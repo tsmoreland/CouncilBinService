@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace TSMoreland.WebApi.Middleware;
+namespace TSMoreland.WebApi.Middleware.Implementation;
 
 public sealed  class CorrelationIdMiddleware
 {
