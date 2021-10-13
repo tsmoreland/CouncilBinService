@@ -17,7 +17,6 @@ namespace TSMoreland.ArdsBorough.Api.App.Controllers;
 
 /// <summary/>
 [Route("api/v{version:apiVersion}/bins")]
-[ApiVersion("1")]
 [ApiController]
 public class BinsController : ControllerBase
 {
@@ -42,6 +41,7 @@ public class BinsController : ControllerBase
     /// <returns>a collection of <see cref="BinCollectionSummary"/></returns>
     [HttpGet]
     [Route("{postcode}/{houseNumber:int}")]
+    [ApiVersion("1")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)] 
@@ -58,7 +58,7 @@ public class BinsController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Returns the bin(s) collected during this week, will be empty if after the collection day
     /// </summary>
     /// <param name="postcode"></param>
     /// <param name="houseNumber"></param>
@@ -68,6 +68,7 @@ public class BinsController : ControllerBase
     [Route("{postcode}/{houseNumber:int}/current")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
+    [ApiVersion("1")]
     [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)] 
     [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
@@ -82,7 +83,7 @@ public class BinsController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Returns the bin(s) collected during the next week, will be empty if after the collection day
     /// </summary>
     /// <param name="postcode"></param>
     /// <param name="houseNumber"></param>
@@ -90,6 +91,7 @@ public class BinsController : ControllerBase
     /// <returns>a collection of <see cref="BinCollectionSummary"/></returns>
     [HttpGet]
     [Route("{postcode}/{houseNumber:int}/next")]
+    [ApiVersion("1")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)] 
@@ -106,7 +108,7 @@ public class BinsController : ControllerBase
     }
 
     /// <summary>
-    /// 
+    /// Returns the full details of bin(s) collected during this week, will be empty if after the collection day
     /// </summary>
     /// <param name="postcode"></param>
     /// <param name="houseNumber"></param>
@@ -114,6 +116,7 @@ public class BinsController : ControllerBase
     /// <returns>a collection of <see cref="BinCollectionSummary"/></returns>
     [HttpGet]
     [Route("{postcode}/{houseNumber}/details")]
+    [ApiVersion("0")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)] 
@@ -134,6 +137,7 @@ public class BinsController : ControllerBase
     /// <returns>a collection of <see cref="BinCollectionSummary"/></returns>
     [HttpGet]
     [Route("{postcode}/{houseNumber}/{binType}")]
+    [ApiVersion("0")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
@@ -154,6 +158,7 @@ public class BinsController : ControllerBase
     /// <returns>a collection of <see cref="BinCollectionSummary"/></returns>
     [HttpGet]
     [Route("{postcode}/{houseNumber}/{binType}/period")]
+    [ApiVersion("0")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
