@@ -1,4 +1,4 @@
-﻿using TSMoreland.ArdsBorough.Bins.Shared;
+﻿using TSMoreland.ArdsBorough.Bins.Collections.Shared;
 
 namespace TSMoreland.ArdsBorough.Bins.Core.ValuesObjects;
 

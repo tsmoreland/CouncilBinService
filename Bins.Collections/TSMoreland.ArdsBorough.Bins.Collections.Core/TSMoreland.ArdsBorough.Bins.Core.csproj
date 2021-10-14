@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TSMoreland.ArdsBorough.Bins.Shared\TSMoreland.ArdsBorough.Bins.Shared.csproj" />
+    <ProjectReference Include="..\TSMoreland.ArdsBorough.Bins.Collections.Shared\TSMoreland.ArdsBorough.Bins.Collections.Shared.csproj" />
   </ItemGroup>
 
 </Project>
