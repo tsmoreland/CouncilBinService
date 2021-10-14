@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using TSMoreland.ArdsBorough.Bins.Shared;
+using TSMoreland.ArdsBorough.Bins.Collections.Shared;
 using TSMoreland.ArdsBorough.Bins.Services;
 
 namespace TSMoreland.ArdsBorough.Bins.DependencyInjection;
