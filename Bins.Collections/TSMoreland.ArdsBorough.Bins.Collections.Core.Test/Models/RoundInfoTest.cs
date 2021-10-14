@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using TSMoreland.ArdsBorough.Bins.Shared;
+using TSMoreland.ArdsBorough.Bins.Collections.Shared;
 using TSMoreland.ArdsBorough.Bins.Core.Models;
 
 namespace TSMoreland.ArdsBorough.Bins.Core.Test.Models;
