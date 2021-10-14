@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ArdsBorough.Api.External\ArdsBorough.WebService.External.csproj" />
+    <ProjectReference Include="..\..\External\ArdsBorough.Api.External\ArdsBorough.WebService.External.csproj" />
     <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.Infrastructure\TSMoreland.ArdsBorough.Api.WebServiceFacade.Infrastructure.csproj" />
     <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.Services\TSMoreland.ArdsBorough.Api.WebServiceFacade.Services.csproj" />
     <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared\TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared.csproj" />
