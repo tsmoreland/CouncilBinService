@@ -1,8 +1,6 @@
-﻿using System;
-using System.Dynamic;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace TSMoreland.ArdsBorough.Bins.Shared;
+namespace TSMoreland.ArdsBorough.Bins.Collections.Shared;
 
 public readonly record struct PostCode(string Value) : IEquatable<PostCode>
 {

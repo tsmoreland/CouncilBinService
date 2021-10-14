@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-
-namespace TSMoreland.ArdsBorough.Bins.Shared;
+﻿namespace TSMoreland.ArdsBorough.Bins.Collections.Shared;
 
 public interface IBinCollectionService
 {
