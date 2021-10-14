@@ -6,8 +6,8 @@ using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
 using TSMoreland.ArdsBorough.Bins.Core.Models;
-using TSMoreland.ArdsBorough.Bins.Shared;
 using TSMoreland.ArdsBorough.Api.WebServiceFacade.Shared;
+using TSMoreland.ArdsBorough.Bins.Collections.Shared;
 
 namespace TSMoreland.ArdsBorough.Bins.Services;
 
