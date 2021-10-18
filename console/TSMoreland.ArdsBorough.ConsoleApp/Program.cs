@@ -16,6 +16,7 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 var config = new ConfigurationBuilder()
     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
@@ -23,7 +24,7 @@ var config = new ConfigurationBuilder()
     .AddUserSecrets(Assembly.GetExecutingAssembly())
     .Build();
 
-//var services = new ServiceCollection();
+var services = new ServiceCollection();
 
 try
 {
