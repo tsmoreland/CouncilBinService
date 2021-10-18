@@ -23,7 +23,7 @@ var config = new ConfigurationBuilder()
     .AddUserSecrets(Assembly.GetExecutingAssembly())
     .Build();
 
-var services = new ServiceCollection();
+//var services = new ServiceCollection();
 
 try
 {
@@ -37,6 +37,7 @@ try
         throw new Exception("Invalid settings, unable to proceed");
     }
 
+    /*
     WebService2Soap service = new WebService2SoapClient(WebService2SoapClient.EndpointConfiguration.WebService2Soap12);
 
     var date = DateTime.Now;
@@ -65,6 +66,7 @@ try
     {
         Console.WriteLine($"{child.Name}: {child.Value}");
     }
+    */
 
 
 }
