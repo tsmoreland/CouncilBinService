@@ -26,4 +26,8 @@
     <PackageReference Include="System.ServiceModel.Security" Version="4.8.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\WebServiceFacade\TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection\TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection.csproj" />
+  </ItemGroup>
+
 </Project>

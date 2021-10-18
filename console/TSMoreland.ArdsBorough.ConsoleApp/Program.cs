@@ -15,7 +15,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
-using ArdsBoroughAndNorthDown.Council;
 using Microsoft.Extensions.Configuration;
 
 var config = new ConfigurationBuilder()
@@ -24,8 +23,11 @@ var config = new ConfigurationBuilder()
     .AddUserSecrets(Assembly.GetExecutingAssembly())
     .Build();
 
+var services = new ServiceCollection();
+
 try
 {
+
     var council = config["council"] ?? string.Empty;
     var urpn = int.Parse(config["URPN"]);
     var pw = config["PW"];
