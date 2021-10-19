@@ -13,8 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Bins.Collections\TSMoreland.ArdsBorough.Bins.Collections.DependencyInjection\TSMoreland.ArdsBorough.Bins.Collections.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\WebServiceFacade\TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection\TSMoreland.ArdsBorough.Api.WebServiceFacade.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\Bins.Collections\TSMoreland.ArdsBorough.Bins.Collections.Shared\TSMoreland.ArdsBorough.Bins.Collections.Shared.csproj" />
+    <ProjectReference Include="..\..\DataTransferObjects\TSMoreland.ArdsBorough.Api.DataTransferObjects\TSMoreland.ArdsBorough.Api.DataTransferObjects.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\TSMoreland.ArdsBorough.Infrastructure\TSMoreland.ArdsBorough.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

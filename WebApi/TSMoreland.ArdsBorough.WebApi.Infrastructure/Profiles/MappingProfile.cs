@@ -1,10 +1,9 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.Extensions.EnumMapping;
-using TSMoreland.ArdsBorough.Bins.Collections.Shared;
+using BinType = TSMoreland.ArdsBorough.Bins.Collections.Shared.BinType;
 using DTO = TSMoreland.ArdsBorough.Api.DataTransferObjects;
 
-namespace TSMoreland.ArdsBorough.Api.Infrastructure.Profiles;
+namespace TSMoreland.ArdsBorough.WebApi.Infrastructure.Profiles;
 
 public sealed class MappingProfile : Profile
 {
