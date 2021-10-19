@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using TSMoreland.ArdsBorough.Api.DataTransferObjects.Response;
-using BinsDomain = TSMoreland.ArdsBorough.Bins.Shared;
+using TSMoreland.ArdsBorough.Bins.Collections.Shared;
 using DTO = TSMoreland.ArdsBorough.Api.DataTransferObjects;
 
 namespace TSMoreland.ArdsBorough.Api.App.Controllers;
@@ -20,12 +20,12 @@ namespace TSMoreland.ArdsBorough.Api.App.Controllers;
 [ApiController]
 public class BinsController : ControllerBase
 {
-    private readonly BinsDomain.IBinCollectionService _binCollectionService;
+    private readonly IBinCollectionService _binCollectionService;
     private readonly IMapper _mapper;
     private readonly ILogger<BinsController> _logger;
 
     /// <summary/>
-    public BinsController(BinsDomain.IBinCollectionService binCollectionService, IMapper mapper, ILogger<BinsController> logger)
+    public BinsController(IBinCollectionService binCollectionService, IMapper mapper, ILogger<BinsController> logger)
     {
         _binCollectionService = binCollectionService ?? throw new ArgumentNullException(nameof(binCollectionService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -50,7 +50,7 @@ public class BinsController : ControllerBase
     public async Task<IActionResult> GetAllUpcoming([FromRoute] string postcode, [FromRoute] int houseNumber, CancellationToken cancellationToken)
     {
         var collections = await _binCollectionService
-            .FindBinCollectionInfoForAddress(houseNumber, new BinsDomain.PostCode(postcode), cancellationToken)
+            .FindBinCollectionInfoForAddress(houseNumber, new PostCode(postcode), cancellationToken)
             .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
             .ToListAsync(cancellationToken);
 
@@ -75,7 +75,7 @@ public class BinsController : ControllerBase
     public async Task<IActionResult> GetThisWeeksType([FromRoute] string postcode, [FromRoute] int houseNumber, CancellationToken cancellationToken)
     {
         var collection = await _binCollectionService
-            .FindThisWeeksBinCollectionInfoForAddress(houseNumber, new BinsDomain.PostCode(postcode), cancellationToken)
+            .FindThisWeeksBinCollectionInfoForAddress(houseNumber, new PostCode(postcode), cancellationToken)
             .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
             .ToListAsync(cancellationToken);
 
@@ -100,7 +100,7 @@ public class BinsController : ControllerBase
     public async Task<IActionResult> GetNextWeeksType([FromRoute] string postcode, [FromRoute] int houseNumber, CancellationToken cancellationToken)
     {
         var collection = await _binCollectionService
-            .FindNextWeeksBinCollectionInfoForAddress(houseNumber, new BinsDomain.PostCode(postcode), cancellationToken)
+            .FindNextWeeksBinCollectionInfoForAddress(houseNumber, new PostCode(postcode), cancellationToken)
             .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
             .ToListAsync(cancellationToken);
 

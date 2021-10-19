@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using TSMoreland.ArdsBorough.Api.App;
+using TSMoreland.ArdsBorough.WebApi.App;
 
 var appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 if (appPath is { Length: >0 })

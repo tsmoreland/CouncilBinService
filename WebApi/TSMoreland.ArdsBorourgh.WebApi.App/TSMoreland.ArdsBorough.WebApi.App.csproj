@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\TSMoreland.ArdsBorough.Infrastructure\TSMoreland.ArdsBorough.Infrastructure.csproj" />
     <ProjectReference Include="..\..\rest-dto\TSMoreland.ArdsBorough.Api.DataTransferObjects\TSMoreland.ArdsBorough.Api.DataTransferObjects.csproj" />
-    <ProjectReference Include="..\TSMoreland.ArdsBorough.Api.Infrastructure\TSMoreland.ArdsBorough.Api.Infrastructure.csproj" />
     <ProjectReference Include="..\TSMoreland.WebApi.Middleware\TSMoreland.WebApi.Middleware.csproj" />
   </ItemGroup>
 

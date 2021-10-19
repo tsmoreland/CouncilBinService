@@ -18,12 +18,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using TSMoreland.WebApi.Middleware;
 using TSMoreland.ArdsBorough.Api.Infrastructure;
+using TSMoreland.WebApi.Middleware;
 using TSMoreland.WebApi.Middleware.SwaggerFilters;
-using Swashbuckle.AspNetCore.Filters;
 
-namespace TSMoreland.ArdsBorough.Api.App;
+namespace TSMoreland.ArdsBorough.WebApi.App;
 
 /// <summary/>
 public class Startup
@@ -106,7 +105,7 @@ public class Startup
             {
                 xmlFiles.Add($"{entryAssembly.GetName().Name}.xml");
             }
-            xmlFiles.Add($"{typeof(DataTransferObjects.BinType).Assembly.GetName().Name}.xml");
+            xmlFiles.Add($"{typeof(Api.DataTransferObjects.BinType).Assembly.GetName().Name}.xml");
 
             var existingFiles = xmlFiles
                 .Select(file => Path.Combine(AppContext.BaseDirectory, file))
