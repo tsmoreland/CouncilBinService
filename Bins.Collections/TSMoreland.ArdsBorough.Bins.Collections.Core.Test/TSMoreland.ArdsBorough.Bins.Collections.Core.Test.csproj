@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TSMoreland.ArdsBorough.Bins.Core\TSMoreland.ArdsBorough.Bins.Core.csproj" />
+    <ProjectReference Include="..\TSMoreland.ArdsBorough.Bins.Collections.Core\TSMoreland.ArdsBorough.Bins.Collections.Core.csproj" />
   </ItemGroup>
 
 </Project>
