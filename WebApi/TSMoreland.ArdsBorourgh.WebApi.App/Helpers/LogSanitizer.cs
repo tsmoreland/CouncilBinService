@@ -1,4 +1,4 @@
-﻿namespace TSMoreland.ArdsBorough.Api.App.Helpers
+﻿namespace TSMoreland.ArdsBorough.WebApi.App.Helpers
 {
     /// <summary>
     /// Log Sanitizing, an attempt at either preventing log forging or silencing snyk warnings about it

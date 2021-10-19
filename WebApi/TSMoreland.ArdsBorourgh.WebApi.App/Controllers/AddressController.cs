@@ -6,7 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using TSMoreland.ArdsBorough.Api.DataTransferObjects.Response;
 using TSMoreland.ArdsBorough.Bins.Collections.Shared;
 
-namespace TSMoreland.ArdsBorough.Api.App.Controllers
+namespace TSMoreland.ArdsBorough.WebApi.App.Controllers
 {
     /// <summary>
     /// Controller hosting endpoints to look up URPN codes for addresses

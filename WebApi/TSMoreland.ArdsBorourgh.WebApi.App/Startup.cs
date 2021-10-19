@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using TSMoreland.ArdsBorough.Api.Infrastructure;
+using TSMoreland.ArdsBorough.WebApi.Infrastructure;
 using TSMoreland.WebApi.Middleware;
 using TSMoreland.WebApi.Middleware.SwaggerFilters;
 
@@ -120,7 +120,7 @@ public class Startup
         services.AddScoped<RemoveVersionParameterOpertationFilter>();
         services.AddScoped<ApplyApiVersionDocumentFilter>();
 
-        services.AddApiInfrastructure();
+        services.AddWebApiInfrastructure();
     }
 
     /// <summary/>

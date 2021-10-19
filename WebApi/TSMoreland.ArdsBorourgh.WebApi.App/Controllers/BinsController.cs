@@ -13,7 +13,7 @@ using TSMoreland.ArdsBorough.Api.DataTransferObjects.Response;
 using TSMoreland.ArdsBorough.Bins.Collections.Shared;
 using DTO = TSMoreland.ArdsBorough.Api.DataTransferObjects;
 
-namespace TSMoreland.ArdsBorough.Api.App.Controllers;
+namespace TSMoreland.ArdsBorough.WebApi.App.Controllers;
 
 /// <summary/>
 [Route("api/v{version:apiVersion}/bins")]

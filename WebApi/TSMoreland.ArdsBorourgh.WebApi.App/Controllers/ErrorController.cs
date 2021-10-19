@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TSMoreland.ArdsBorough.Api.App.Controllers;
+namespace TSMoreland.ArdsBorough.WebApi.App.Controllers;
 
 /// <summary>
 /// based on <a href="https://docs.microsoft.com/en-us/aspnet/core/web-api/handle-errors?view=aspnetcore-6.0">Handle errors in ASP.NET Core web APIs</a>
