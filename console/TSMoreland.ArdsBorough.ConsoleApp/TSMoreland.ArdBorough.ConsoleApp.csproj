@@ -23,4 +23,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0-rc.2.21480.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Bins.Collections\TSMoreland.ArdsBorough.Bins.Collections.Shared\TSMoreland.ArdsBorough.Bins.Collections.Shared.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\TSMoreland.ArdsBorough.Infrastructure\TSMoreland.ArdsBorough.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

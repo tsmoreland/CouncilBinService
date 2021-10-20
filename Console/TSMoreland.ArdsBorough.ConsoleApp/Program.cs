@@ -12,11 +12,12 @@
 // 
 
 using System;
-using System.Linq;
 using System.Reflection;
-using System.Xml.Linq;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TSMoreland.ArdsBorough.Bins.Collections.Shared;
+using TSMoreland.ArdsBorough.Infrastructure;
 
 var config = new ConfigurationBuilder()
     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
@@ -24,18 +25,20 @@ var config = new ConfigurationBuilder()
     .AddUserSecrets(Assembly.GetExecutingAssembly())
     .Build();
 
-var services = new ServiceCollection();
 
 try
 {
+    var services = new ServiceCollection();
+    services.AddArdsBoroughInfrastructure();
+    var provider = services.BuildServiceProvider();
 
-    var council = config["council"] ?? string.Empty;
-    var urpn = int.Parse(config["URPN"]);
-    var pw = config["PW"];
 
-    if (council is not { Length: > 0 } || pw is not { Length: >0 })
+    var service = provider.GetRequiredService<IBinCollectionService>();
+
+    var enumerable = service.FindBinCollectionInfoForAddress(1, new PostCode("SW1A1AA"), CancellationToken.None);
+    await foreach (var item in enumerable)
     {
-        throw new Exception("Invalid settings, unable to proceed");
+        Console.Out.Write($"{item.Type} on {item.Date}");
     }
 
     /*
