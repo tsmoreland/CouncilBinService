@@ -16,6 +16,7 @@ using System.Reflection;
 using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using TSMoreland.ArdsBorough.Bins.Collections.Shared;
 using TSMoreland.ArdsBorough.Infrastructure;
 
@@ -29,9 +30,19 @@ var config = new ConfigurationBuilder()
 try
 {
     var services = new ServiceCollection();
+    services.AddSingleton<IConfiguration>(config);
     services.AddArdsBoroughInfrastructure();
-    var provider = services.BuildServiceProvider();
+    services.AddLogging(builder =>
+    {
+        builder.AddConfiguration(config.GetSection("Logging"));
+        if (!OperatingSystem.IsBrowser())
+        {
+            builder.AddConsole();
+        }
+        builder.AddDebug();
+    });
 
+    var provider = services.BuildServiceProvider();
 
     var service = provider.GetRequiredService<IBinCollectionService>();
 
