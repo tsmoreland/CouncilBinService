@@ -66,7 +66,6 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
                 source[(indexOfColon + 1)..indexOfThenEvery],
                 source[(indexOfThenEvery + "THEN EVERY ".Length)..]
             );
-
         }
         static bool TryParseBinType(string source, out BinType binType)
         {
