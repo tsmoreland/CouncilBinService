@@ -26,7 +26,6 @@ var config = new ConfigurationBuilder()
     .AddUserSecrets(Assembly.GetExecutingAssembly())
     .Build();
 
-
 try
 {
     var services = new ServiceCollection();
@@ -47,41 +46,10 @@ try
     var service = provider.GetRequiredService<IBinCollectionService>();
 
     var enumerable = service.FindBinCollectionInfoForAddress(1, new PostCode("SW1A1AA"), CancellationToken.None);
-    await foreach (var item in enumerable)
+    await foreach (var (type, date) in enumerable)
     {
-        Console.Out.Write($"{item.Type} on {item.Date}");
+        Console.Out.Write($"{type} on {date}");
     }
-
-    /*
-    WebService2Soap service = new WebService2SoapClient(WebService2SoapClient.EndpointConfiguration.WebService2Soap12);
-
-    var date = DateTime.Now;
-    if (date.DayOfWeek != DayOfWeek.Sunday)
-    {
-        date = date.Subtract(TimeSpan.FromDays((int)date.DayOfWeek));
-    }
-
-    var formattedDate = date.ToString("dd/MM/yyyy");
-    var rootNode = await service.getRoundInfoForUPRNNewAsync(council, urpn.ToString(), pw, formattedDate);
-    if (rootNode is null)
-    {
-        Console.WriteLine("Request failed or no response");
-        return;
-    }
-
-    var document = XDocument.Parse(rootNode.InnerXml);
-    var row = document.Descendants("Row").FirstOrDefault();
-    if (row is null)
-    {
-        Console.WriteLine("Missing 'Row' element");
-        return;
-    }
-
-    foreach (var child in row.Descendants())
-    {
-        Console.WriteLine($"{child.Name}: {child.Value}");
-    }
-    */
 
 
 }
