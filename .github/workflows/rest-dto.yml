@@ -4,12 +4,12 @@ on:
   push:
     branches: [ main ]
     paths:
-    - rest-dto/**
+    - DataTransferObjects/**
     - .github/workflows/rest-dto.yml
   pull_request:
     branches: [ main ]
     paths:
-    - rest-dto/**
+    - DataTransferObjects/**
     - .github/workflows/rest-dto.yml
     
 jobs:
@@ -26,10 +26,10 @@ jobs:
         include-prerelease: True
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: rest-dto
+      working-directory: DataTransferObjects
     - name: Build
       run: dotnet build --no-restore
-      working-directory: rest-dto
+      working-directory: DataTransferObjects
     - name: Test
       run: dotnet test --no-build --verbosity normal
-      working-directory: rest-dto
+      working-directory: DataTransferObjects
