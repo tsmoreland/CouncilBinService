@@ -3,10 +3,18 @@
 # Council Bin Service
 Various applications with querying bin schedule from ArsBorough webservice - more of an adapter and chance to build a simple webapi with a vague purpose
 
-## Console App
+## External
 
-- currently queries based on config settings and dumps a vaguely formatted output
+- external soap service used to retrieve data
 
-## REST API
+## WebServiceFacade
 
-- api endpoint adapter meant to provide a REST API interface as an alternative to the webservice API
+- facade to the external soap service translating the respones to types the rest of the app can work with
+
+## Bin Collections
+
+- context responsible for handling collection queries, currently for a given address but eventually more generic identifiers
+
+## Address 
+
+- context responsible for translating addresses to something the webservice can work with providing an identifier that bin collection service can use
