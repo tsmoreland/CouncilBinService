@@ -7,10 +7,10 @@ namespace TSMoreland.WebApi.Middleware.Implementation;
 public sealed  class CorrelationIdMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IOptionsMonitor<CorrectionIdOptions> _options;
+    private readonly IOptionsMonitor<CorrelationIdOptions> _options;
     private readonly ILogger<CorrelationIdMiddleware> _logger;
 
-    public CorrelationIdMiddleware(RequestDelegate next, IOptionsMonitor<CorrectionIdOptions> options, ILogger<CorrelationIdMiddleware> logger)
+    public CorrelationIdMiddleware(RequestDelegate next, IOptionsMonitor<CorrelationIdOptions> options, ILogger<CorrelationIdMiddleware> logger)
     {
         _next = next ?? throw new ArgumentNullException(nameof(next));
         _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -23,7 +23,7 @@ public sealed  class CorrelationIdMiddleware
         var header = _options.CurrentValue.HeaderName;
         if (header is not { Length: > 0 })
         {
-            header = CorrectionIdOptions.DefaultHeaderName;
+            header = CorrelationIdOptions.DefaultHeaderName;
         }
 
         context.Response.Headers.Add("X-Correction-Id", context.TraceIdentifier);

@@ -1,6 +1,6 @@
 ﻿namespace TSMoreland.WebApi.Middleware;
 
-public sealed class CorrectionIdOptions
+public sealed class CorrelationIdOptions
 {
     internal static string DefaultHeaderName => "X-Correlation-Id";
 
