@@ -131,7 +131,7 @@ public class Startup
         app.UseExceptionHandler(Environment.IsDevelopment() 
             ? "/api/error-dev" 
             : "/api/error");
-        
+
         app.UseSwagger(options =>
         {
             // explciit set of what the default should already be
@@ -154,6 +154,7 @@ public class Startup
                 options.SwaggerEndpoint($"/api/{version.GroupName}/swagger.json", version.GroupName.ToUpperInvariant());
             }
         });
+
 
         app.UseRouting();
 
