@@ -13,12 +13,13 @@
 
 using System.Net.Mime;
 using System.Runtime.ExceptionServices;
-using System.Text.Json;
+using System.Text;
 using System.Xml.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 
 namespace TSMoreland.WebApi.Middleware
 {
@@ -28,6 +29,7 @@ namespace TSMoreland.WebApi.Middleware
         private readonly ProblemDetailsFactory _problemDetailsFactory;
         private readonly ILogger _logger;
         private static readonly Lazy<XmlSerializer> _xmlSerializer = new(() => new XmlSerializer(typeof(ProblemDetails)));
+        private readonly List<(string Name, StringValues Values)> _headers = new();
 
         public ErrorHandlingMiddleware(RequestDelegate next, ILoggerFactory loggerFactory, ProblemDetailsFactory problemDetailsFactory)
         {
@@ -43,6 +45,7 @@ namespace TSMoreland.WebApi.Middleware
         public Task Invoke(HttpContext context)
         {
             ExceptionDispatchInfo? edi = null;
+            StoreCurrentHeaders();
 
             try
             {
@@ -73,6 +76,15 @@ namespace TSMoreland.WebApi.Middleware
 
                 await middleware.HandleResponse(context, edi);
             }
+
+            void StoreCurrentHeaders()
+            {
+                foreach (var header in context.Response.Headers)
+                {
+                    var (name, value) = header;
+                    _headers.Add((name, value));
+                }
+            }
         }
 
         private Task HandleResponse(HttpContext context, ExceptionDispatchInfo? edi)
@@ -82,9 +94,13 @@ namespace TSMoreland.WebApi.Middleware
                 return HandleException(context, edi);
             }
 
-            return context.Response.StatusCode >= 400 
-                ? HandleErrorStatus(context) 
-                : Task.CompletedTask;
+            if (context.Response.StatusCode >= 400)
+            {
+                return HandleErrorStatus(context);
+            }
+
+            _headers.Clear();
+            return Task.CompletedTask;
         }
 
         private Task HandleErrorStatus(HttpContext context)
@@ -118,7 +134,7 @@ namespace TSMoreland.WebApi.Middleware
             return WriteProblemToResponse(context, problem);
         }
 
-        private static async Task WriteProblemToResponse(HttpContext context, ProblemDetails problem)
+        private async Task WriteProblemToResponse(HttpContext context, ProblemDetails problem)
         {
             var acceptTypes = context.Request.Headers.Accept;
 
@@ -127,11 +143,16 @@ namespace TSMoreland.WebApi.Middleware
             bool xml = acceptTypes.Any(s =>
                 string.Equals(s, MediaTypeNames.Application.Xml, StringComparison.OrdinalIgnoreCase));
 
-            // TODO:
-            // store existing headers like CORS so they can be re-added, either from an Options or from
-            // a reasonable set (again, like CORS)
             context.Response.Clear();
             context.Response.StatusCode = problem.Status ?? 500;
+
+            foreach (var pair in _headers)
+            {
+                var (name, value) = pair;
+                context.Response.Headers.Add(name, value);
+            }
+
+            _headers.Clear();
 
             if (json || !xml)
             {
@@ -141,14 +162,10 @@ namespace TSMoreland.WebApi.Middleware
             else if (xml)
             {
                 context.Response.ContentType = "application/problem+xml";
-                /*
-                1. get StringWriter, maybe memory stream
-                2. use that stream to serialize to text
-                3. write that string using WriteAsync
-                _xmlSerializer.Value.Serialize(
-                await context.Response.WriteAsync(
-                */
 
+                var encoding = new UTF8Encoding(false);
+                await using var writer = new StreamWriter(context.Response.Body, encoding);
+                _xmlSerializer.Value.Serialize(writer, problem);
             }
         }
 
