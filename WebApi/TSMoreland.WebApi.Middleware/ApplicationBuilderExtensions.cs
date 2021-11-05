@@ -13,4 +13,10 @@ public static class ApplicationBuilderExtensions
         return app.UseMiddleware<CorrelationIdMiddleware>();
     }
 
+    public static IApplicationBuilder UseErrorHandler(this IApplicationBuilder app)
+    {
+        ArgumentNullException.ThrowIfNull(app, nameof(app));
+
+        return app.UseMiddleware<ErrorHandlerMiddleware>();
+    }
 }
