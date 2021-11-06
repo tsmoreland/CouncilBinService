@@ -1,13 +1,121 @@
-﻿using System.Runtime.ExceptionServices;
+﻿using System.Net.Mime;
+using System.Runtime.ExceptionServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Net.Http.Headers;
 
 namespace TSMoreland.WebApi.Middleware
 {
     public sealed class ProblemDetailsGenerator
     {
+        private readonly string? _corectionIdHeaderName;
+        private readonly ProblemDetailsFactory _problemDetailsFactory;
 
+        public ProblemDetailsGenerator(string? corectionIdHeaderName, ProblemDetailsFactory problemDetailsFactory)
+        {
+            _corectionIdHeaderName = corectionIdHeaderName;
+            _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
+        }
 
+        public IActionResult BuildForInvalidModelState(ActionContext actionContext)
+        {
+            var context = actionContext.HttpContext;
+            int? statusCode = context.Response.StatusCode >= 400
+                ? context.Response.StatusCode
+                : null;
+
+            var problem = Build(context);
+            var result = new ObjectResult(problem) { StatusCode = statusCode };
+
+            var contentType = GetResponseType(context);
+            result.ContentTypes.Clear();
+            result.ContentTypes.Add(new MediaTypeHeaderValue(contentType)); 
+
+            return result;
+        }
+
+        public ProblemDetails Build(HttpContext context)
+        {
+            if (context.Response.StatusCode < 400)
+            {
+                throw new ArgumentException("Cannot build problems for successful status");
+            }
+
+            int statusCode = context.Response.StatusCode;
+            var type = $"https://httpstatuses.com/{statusCode}";
+            var title = GetErrorStatusDescription(statusCode);
+
+            return BuildProblem(context, statusCode: statusCode, type: type, title: title, traceId: GetTraceIdOrDefault(context));
+        }
+
+        public ProblemDetails Build(HttpContext context, ExceptionDispatchInfo edi)
+        {
+            var statusCode = context.Response.StatusCode >= 400
+                ? context.Response.StatusCode
+                : 500;
+
+            return BuildProblem(context, statusCode: statusCode, traceId: GetTraceIdOrDefault(context));
+        }
+
+        private string? GetTraceIdOrDefault(HttpContext context)
+        {
+            return _corectionIdHeaderName is { Length: > 0 } 
+                ? context.Response.Headers[_corectionIdHeaderName].ToString()
+                : null;
+        }
+
+        private static string GetResponseType(HttpContext context)
+        {
+            var requestJson = false;
+            var requestXml = false;
+
+            foreach (var header in context.Request.Headers.Accept)
+            {
+                if (string.Equals(header, MediaTypeNames.Application.Json, StringComparison.OrdinalIgnoreCase))
+                {
+                    requestJson = true;
+                    break;
+                }
+                if (string.Equals(header, MediaTypeNames.Application.Xml, StringComparison.OrdinalIgnoreCase))
+                {
+                    requestXml = true;
+                }
+            }
+
+            if (requestXml && !requestJson)
+            {
+                return "application/problem+xml"; 
+            }
+            else
+            {
+                return "application/problem+json"; 
+            }
+        }
+
+        private ProblemDetails BuildProblem(
+            HttpContext context,
+            string? detail = null,
+            string? instance = null,
+            int? statusCode = null,
+            string? title = null,
+            string? type = null,
+            string? traceId = null)
+        {
+            var problem = _problemDetailsFactory.CreateProblemDetails(
+                context,
+                statusCode: statusCode ?? 500,
+                title: title,
+                type: type,
+                detail: detail,
+                instance: instance);
+            if (traceId is { Length: > 0 })
+            {
+                problem.Extensions["traceId"] = traceId;
+            }
+
+            return problem;
+        }
         internal static string GetErrorStatusDescription(int? statusCode)
         {
             var value = statusCode ?? 0;

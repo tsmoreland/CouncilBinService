@@ -89,11 +89,6 @@ namespace TSMoreland.WebApi.Middleware.Implementation
 
         private Task HandleResponse(HttpContext context, ExceptionDispatchInfo? edi)
         {
-            if (context.Response.HasStarted)
-            {
-                throw new NotSupportedException();
-            }
-
             if (edi is not null)
             {
                 return HandleException(context, edi);
