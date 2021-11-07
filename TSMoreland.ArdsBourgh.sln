@@ -56,7 +56,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSMoreland.WebApi.Middlewar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSMoreland.ArdsBorough.WebApi.App", "WebApi\TSMoreland.ArdsBorourgh.WebApi.App\TSMoreland.ArdsBorough.WebApi.App.csproj", "{C148D5F8-1883-46CD-A947-586B7FE28B5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSMoreland.ArdsBorough.WebApi.Infrastructure", "WebApi\TSMoreland.ArdsBorough.WebApi.Infrastructure\TSMoreland.ArdsBorough.WebApi.Infrastructure.csproj", "{61DD5006-0902-4E94-930F-DA338602909F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSMoreland.ArdsBorough.WebApi.Infrastructure", "WebApi\TSMoreland.ArdsBorough.WebApi.Infrastructure\TSMoreland.ArdsBorough.WebApi.Infrastructure.csproj", "{61DD5006-0902-4E94-930F-DA338602909F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tsmoreland.AspNetCore.Api.ErrorHandlers", "AspNetCore\Tsmoreland.AspNetCore.Api.ErrorHandlers\Tsmoreland.AspNetCore.Api.ErrorHandlers.csproj", "{FEA8BC09-E3DF-4694-9D9B-BF845A0D585A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AspNetCore", "AspNetCore", "{626FF5AB-B57D-4EC5-B7D3-A9D10623EEEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -136,6 +140,10 @@ Global
 		{61DD5006-0902-4E94-930F-DA338602909F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61DD5006-0902-4E94-930F-DA338602909F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61DD5006-0902-4E94-930F-DA338602909F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEA8BC09-E3DF-4694-9D9B-BF845A0D585A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEA8BC09-E3DF-4694-9D9B-BF845A0D585A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEA8BC09-E3DF-4694-9D9B-BF845A0D585A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEA8BC09-E3DF-4694-9D9B-BF845A0D585A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -159,6 +167,8 @@ Global
 		{AB48D1E2-828B-48C7-932F-A66263B0F9C3} = {109B32AC-3322-4723-8F03-7B1D4E981422}
 		{C148D5F8-1883-46CD-A947-586B7FE28B5E} = {109B32AC-3322-4723-8F03-7B1D4E981422}
 		{61DD5006-0902-4E94-930F-DA338602909F} = {109B32AC-3322-4723-8F03-7B1D4E981422}
+		{FEA8BC09-E3DF-4694-9D9B-BF845A0D585A} = {626FF5AB-B57D-4EC5-B7D3-A9D10623EEEA}
+		{626FF5AB-B57D-4EC5-B7D3-A9D10623EEEA} = {EB10535E-DB2C-4F7F-BF6F-FA28C4D32A8C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ACF31183-C0A3-43FA-A43E-7F14F112DD1A}
