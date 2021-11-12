@@ -34,15 +34,22 @@ public sealed class ErrorHandlerMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly IOptionsMonitor<ErrorHandlerOptions> _options;
+    private readonly IErrorResponseProvider _errorResponseProvider;
     private readonly ProblemDetailsFactory _problemDetailsFactory;
     private readonly ILogger _logger;
     private static readonly Lazy<XmlSerializer> _xmlSerializer = new(() => new XmlSerializer(typeof(ProblemDetails)));
     private readonly List<(string Name, StringValues Values)> _headers = new();
 
-    public ErrorHandlerMiddleware(RequestDelegate next, IOptionsMonitor<ErrorHandlerOptions> options, ILoggerFactory loggerFactory, ProblemDetailsFactory problemDetailsFactory)
+    public ErrorHandlerMiddleware(
+        RequestDelegate next, 
+        IOptionsMonitor<ErrorHandlerOptions> options, 
+        IErrorResponseProvider errorResponseProvider,
+        ILoggerFactory loggerFactory, 
+        ProblemDetailsFactory problemDetailsFactory)
     {
         _next = next ?? throw new ArgumentNullException(nameof(next));
         _options = options ?? throw new ArgumentNullException(nameof(options));
+        _errorResponseProvider = errorResponseProvider ?? throw new ArgumentNullException(nameof(errorResponseProvider));
         _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
         _logger = loggerFactory.CreateLogger<ErrorHandlerMiddleware>();
     }
