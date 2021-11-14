@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 
 namespace Tsmoreland.AspNetCore.Api.Diagnostics;
 
@@ -14,6 +16,8 @@ public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
     private readonly ProblemDetailsFactory _problemDetailsFactory;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<ProblemDetailsErrorProvider> _logger;
+    private const string _problemJsonType = "application/problem+json";
+    private const string _problemXmlType = "application/problem+xml";
 
     public ProblemDetailsErrorProvider(
         ProblemDetailsFactory problemDetailsFactory,
@@ -39,21 +43,37 @@ public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
 
         var result = new BadRequestObjectResult(problem);
         result.ContentTypes.Clear();
-        result.ContentTypes.Add(new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/problem+json"));
-        result.ContentTypes.Add(new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("application/problem+xml"));
+        result.ContentTypes.Add(new Microsoft.Net.Http.Headers.MediaTypeHeaderValue(_problemJsonType));
+        result.ContentTypes.Add(new Microsoft.Net.Http.Headers.MediaTypeHeaderValue(_problemXmlType));
         return result;
     }
 
     /// <inheritdoc/>
-    public ValueTask WriteResponseAsync(HttpResponse response, HttpContext context, CancellationToken cancellationToken = default)
+    public ValueTask WriteResponseIfNotSetAsync(
+        HttpResponse response, 
+        HttpContext context, 
+        IEnumerable<(string Name, StringValues Values)> additionalHeaders, 
+        CancellationToken cancellationToken = default)
     {
         _logger.LogError("Return error {StatusCode}", context.Response.StatusCode);
 
-        return WriteResponseAsync(response, context.GetProblemResponseTypeFromAccept(), BuildProblem(context), cancellationToken);
+        // do nothing if content-type is a problem type already
+        var contentType = response.ContentType;
+        if (string.Equals(contentType, "application/problem+json", StringComparison.OrdinalIgnoreCase) || 
+            string.Equals(contentType, "application/problem+xml", StringComparison.OrdinalIgnoreCase))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        return WriteResponseAsync(response, context.GetProblemResponseTypeFromAccept(), BuildProblem(context), additionalHeaders, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public ValueTask WriteResponseAsync(HttpResponse response, ExceptionDispatchInfo? edi, CancellationToken cancellationToken = default)
+    public ValueTask WriteResponseAsync(
+        HttpResponse response, 
+        ExceptionDispatchInfo? edi, 
+        IEnumerable<(string Name, StringValues Values)> additionalHeaders, 
+        CancellationToken cancellationToken = default)
     {
         _logger.LogError(edi?.SourceException, "Exception occurred, returning error {Message}",
             edi?.SourceException.Message ?? "Unknown"); 
@@ -61,33 +81,51 @@ public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
         return WriteResponseAsync(response, 
             context?.GetProblemResponseTypeFromAccept() ?? "application/problem+json", 
             BuildProblemFromException(context, edi?.SourceException) ?? BuildProblem(context), 
+            additionalHeaders,
             cancellationToken);
     }
 
     /// <inheritdoc/>
-    public ValueTask WriteResponseAsync(HttpResponse response, Exception? exception, CancellationToken cancellationToken = default)
+    public ValueTask WriteResponseAsync(
+        HttpResponse response, 
+        Exception? exception, 
+        IEnumerable<(string Name, StringValues Values)> additionalHeaders, 
+        CancellationToken cancellationToken = default)
     {
         _logger.LogError(exception, "Exception occurred, returning error {Message}",
             exception?.Message ?? "Unknown"); 
         var context = _httpContextAccessor.HttpContext;
         return WriteResponseAsync(response, 
-            context?.GetProblemResponseTypeFromAccept() ?? "application/problem+json", 
+            context?.GetProblemResponseTypeFromAccept() ?? _problemJsonType, 
             BuildProblemFromException(context, exception) ?? BuildProblem(context), 
+            additionalHeaders,
             cancellationToken);
     }
 
     /// <inheritdoc/>
-    public ValueTask WriteResponseAsync(HttpResponse response, int statusCode, string? title = null, string? details = null, CancellationToken cancellationToken = default)
+    public ValueTask WriteResponseAsync(
+        HttpResponse response, 
+        IEnumerable<(string Name, StringValues Values)> additionalHeaders, 
+        int statusCode, 
+        string? title = null, 
+        string? details = null, 
+        CancellationToken cancellationToken = default)
     {
         _logger.LogError("Return error {StatusCode}: {Title}", statusCode, title);
         var context = _httpContextAccessor.HttpContext;
         return WriteResponseAsync(response, 
             "application/problem+json", 
-            BuildProblem(context, details, statusCode: statusCode, title: title), 
+            BuildProblem(context, details,  statusCode: statusCode, title: title), 
+            additionalHeaders,
             cancellationToken);
     }
 
-    private static ValueTask WriteResponseAsync(HttpResponse response, string contentType, ProblemDetails problem, CancellationToken cancellationToken)
+    private static ValueTask WriteResponseAsync(
+        HttpResponse response, 
+        string contentType, 
+        ProblemDetails problem, 
+        IEnumerable<(string Name, StringValues Values)> additionalHeaders, 
+        CancellationToken cancellationToken)
     {
         if (response.HasStarted)
         {
@@ -95,6 +133,13 @@ public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
         }
         response.ContentType = contentType;
         response.StatusCode = problem.Status ?? StatusCodes.Status500InternalServerError;
+
+        foreach (var pair in additionalHeaders)
+        {
+            var (name, value) = pair;
+            response.Headers.Add(name, value);
+        }
+
         return new ValueTask(response.WriteAsJsonAsync(problem, cancellationToken));
     }
 
