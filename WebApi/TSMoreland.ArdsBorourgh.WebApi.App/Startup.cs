@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Mime;
 using System.Reflection;
@@ -8,17 +9,17 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using TSMoreland.ArdsBorough.WebApi.Infrastructure;
+using Tsmoreland.AspNetCore.Api.Diagnostics;
 using TSMoreland.WebApi.Middleware;
 using TSMoreland.WebApi.Middleware.SwaggerFilters;
 
@@ -52,7 +53,6 @@ public class Startup
                 options.SuppressInferBindingSourcesForParameters = true;
                 options.SuppressModelStateInvalidFilter = true;
                 options.SuppressMapClientErrors = true;
-                options.ClientErrorMapping[StatusCodes.Status404NotFound].Link = "https://httpstatuses.com/404";
                 options.InvalidModelStateResponseFactory = context =>
                 {
                     var result = new BadRequestObjectResult(context.ModelState);
@@ -70,7 +70,16 @@ public class Startup
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
-
+        services.AddResponseCompression(options =>
+        {
+            options.Providers.Add<BrotliCompressionProvider>();
+            options.Providers.Add<GzipCompressionProvider>();
+            options.EnableForHttps = true;
+        });
+        services.Configure<BrotliCompressionProviderOptions>(options => 
+        {
+            options.Level = CompressionLevel.Optimal;
+        });
         services.AddHttpContextAccessor();
         services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'V");
         services.AddApiVersioning(options => options.ApiVersionReader = new UrlSegmentApiVersionReader());
@@ -120,6 +129,7 @@ public class Startup
         services.AddScoped<RemoveVersionParameterOpertationFilter>();
         services.AddScoped<ApplyApiVersionDocumentFilter>();
 
+        services.AddErrorHandler();
         services.AddWebApiInfrastructure();
     }
 
@@ -127,10 +137,8 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseCorrelationId();
-
-        app.UseExceptionHandler(Environment.IsDevelopment() 
-            ? "/api/error-dev" 
-            : "/api/error");
+        app.UseErrorHandler();
+        app.UseResponseCompression();
 
         app.UseSwagger(options =>
         {
