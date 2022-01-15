@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net.Mime;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -17,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using TSMoreland.ArdsBorough.WebApi.Infrastructure;
 using Tsmoreland.AspNetCore.Api.Diagnostics;
@@ -47,23 +46,6 @@ public class Startup
             {
                 options.OutputFormatters.RemoveType<StringOutputFormatter>();
             })
-            .ConfigureApiBehaviorOptions(options =>
-            {
-                options.SuppressConsumesConstraintForFormFileParameters = true;
-                options.SuppressInferBindingSourcesForParameters = true;
-                options.SuppressModelStateInvalidFilter = true;
-                options.SuppressMapClientErrors = true;
-                options.InvalidModelStateResponseFactory = context =>
-                {
-                    var result = new BadRequestObjectResult(context.ModelState);
-                    foreach (var mimeType in new[] { MediaTypeNames.Application.Json, MediaTypeNames.Application.Xml })
-                    {
-                        result.ContentTypes.Add(mimeType);
-                    }
-
-                    return result;
-                };
-            })
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
@@ -79,6 +61,9 @@ public class Startup
         services.Configure<BrotliCompressionProviderOptions>(options => 
         {
             options.Level = CompressionLevel.Optimal;
+        });
+        services.AddMvcCore(options =>
+        {
         });
         services.AddHttpContextAccessor();
         services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'V");
@@ -137,7 +122,15 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseCorrelationId();
-        app.UseErrorHandler();
+        app.UseStatusCodePagesWithReExecute("/api/error/{0}");
+        app.UseExceptionHandler("/api/error/");
+
+        if (!Environment.IsDevelopment())
+        {
+            app.UseHsts();
+        }
+
+
         app.UseResponseCompression();
 
         app.UseSwagger(options =>

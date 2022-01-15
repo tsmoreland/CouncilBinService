@@ -48,7 +48,7 @@ try
     var enumerable = service.FindBinCollectionInfoForAddress(1, new PostCode("SW1A1AA"), CancellationToken.None);
     await foreach (var (type, date) in enumerable)
     {
-        Console.Out.Write($"{type} on {date}");
+        Console.WriteLine($"{type} on {date}");
     }
 
 

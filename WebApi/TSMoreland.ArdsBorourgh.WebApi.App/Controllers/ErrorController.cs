@@ -1,7 +1,9 @@
 ﻿using System;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace TSMoreland.ArdsBorough.WebApi.App.Controllers;
 
@@ -13,15 +15,42 @@ namespace TSMoreland.ArdsBorough.WebApi.App.Controllers;
 [ApiExplorerSettings(IgnoreApi = true)]
 public class ErrorController : ControllerBase
 {
+    private readonly ILogger<ErrorController> _logger;
+
+    /// <summary>
+    /// Instantiates a new instance of the <see cref="ErrorController"/> class.
+    /// </summary>
+    public ErrorController(ILoggerFactory loggerFactory)
+    {
+        _logger = loggerFactory.CreateLogger<ErrorController>();
+    }
+
+
     /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    [Route("api/error")]
-    public IActionResult Error()
+    [Route("api/error/{id:int?}")]
+    public IActionResult Error(int? id)
     {
-        return Problem();
+        IExceptionHandlerPathFeature context = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+        Exception? exception = context?.Error;
+
+        _logger.LogCritical(exception,"Unhandled exception in request {TraceIdentifier}: {Exception}",
+            HttpContext.TraceIdentifier,
+            exception?.GetBaseException().ToString() ?? "no exception available");
+
+        int statusCode = id ?? StatusCodes.Status500InternalServerError;
+        ProblemDetails problemDetails = new ()
+        {
+            Status = statusCode,
+            Title = "Temporary Title",
+            Detail = "Temporary Description",
+            Instance = context?.Path,
+        };
+
+        return new ObjectResult(problemDetails) { StatusCode = statusCode };
     }
 
     /// <summary>

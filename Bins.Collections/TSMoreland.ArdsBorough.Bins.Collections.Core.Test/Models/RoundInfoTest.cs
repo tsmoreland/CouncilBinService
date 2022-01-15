@@ -37,27 +37,27 @@ public class RoundInfoTest
     [TestCaseSource(nameof(ValidSerializedRoundInfos))]
     public void Parse_ReturnsExpectedBinType_WhenStringIsExpectedFormat(string data, BinType expectedBinType, DateOnly expectedDate, TimeSpan expectedFrequency)
     {
-        var (actual, _, _) = RoundInfo.ParseOrNone(data);
+        (BinType actual, _, _) = RoundInfo.ParseOrNone(data);
         Assert.That(actual, Is.EqualTo(expectedBinType));
     }
 
     [TestCaseSource(nameof(ValidSerializedRoundInfos))]
     public void Parse_ReturnsExpectedDate_WhenStringIsExpectedFormat(string data, BinType expectedBinType, DateOnly expectedDate, TimeSpan expectedFrequency)
     {
-        var (_, actual, _) = RoundInfo.ParseOrNone(data);
+        (_, DateOnly actual, _) = RoundInfo.ParseOrNone(data);
         Assert.That(actual, Is.EqualTo(expectedDate));
     }
 
     [TestCaseSource(nameof(ValidSerializedRoundInfos))]
     public void Parse_ReturnsExpectedFrequency_WhenStringIsExpectedFormat(string data, BinType expectedBinType, DateOnly expectedDate, TimeSpan expectedFrequency)
     {
-        var (_, _, actual) = RoundInfo.ParseOrNone(data);
+        (_, _, TimeSpan actual) = RoundInfo.ParseOrNone(data);
         Assert.That(actual, Is.EqualTo(expectedFrequency));
     }
 
     public static IEnumerable<TestCaseData> ValidSerializedRoundInfos()
     {
-        var year = DateTime.Now.Year;
+        int year = DateTime.Now.Year;
         yield return new TestCaseData("Grey Bin: Mon 11 Oct then every alternate Mon", BinType.Black, new DateOnly(year, 10, 11), TimeSpan.FromDays(14));
         yield return new TestCaseData("Blue Bin: Mon 18 Oct then every alternate Mon", BinType.Blue, new DateOnly(year, 10, 18), TimeSpan.FromDays(14));
         yield return new TestCaseData("Green /Brown Bin: Mon 18 Oct then every alternate Mon", BinType.Brown, new DateOnly(year, 10, 18), TimeSpan.FromDays(14));

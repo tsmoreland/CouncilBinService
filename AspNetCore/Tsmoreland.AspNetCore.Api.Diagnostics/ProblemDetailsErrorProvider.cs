@@ -16,9 +16,22 @@ public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
     private readonly ProblemDetailsFactory _problemDetailsFactory;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<ProblemDetailsErrorProvider> _logger;
-    private const string _problemJsonType = "application/problem+json";
-    private const string _problemXmlType = "application/problem+xml";
+    private const string ProblemJsonType = "application/problem+json";
+    private const string ProblemXmlType = "application/problem+xml";
 
+    public ProblemDetailsErrorProvider(
+        IHttpContextAccessor httpContextAccessor, 
+        ILoggerFactory loggerFactory)
+    {
+        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+
+        ArgumentNullException.ThrowIfNull(loggerFactory, nameof(loggerFactory));
+        _logger = loggerFactory.CreateLogger<ProblemDetailsErrorProvider>();
+
+        _problemDetailsFactory = null!;
+    }
+
+    /*
     public ProblemDetailsErrorProvider(
         ProblemDetailsFactory problemDetailsFactory,
         IHttpContextAccessor httpContextAccessor,
@@ -29,6 +42,7 @@ public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
         ArgumentNullException.ThrowIfNull(loggerFactory, nameof(loggerFactory));
         _logger = loggerFactory.CreateLogger<ProblemDetailsErrorProvider>();
     }
+    */
 
     /// <inheritdoc/>
     public IActionResult Build(ActionContext context)
@@ -43,8 +57,8 @@ public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
 
         var result = new BadRequestObjectResult(problem);
         result.ContentTypes.Clear();
-        result.ContentTypes.Add(new Microsoft.Net.Http.Headers.MediaTypeHeaderValue(_problemJsonType));
-        result.ContentTypes.Add(new Microsoft.Net.Http.Headers.MediaTypeHeaderValue(_problemXmlType));
+        result.ContentTypes.Add(new Microsoft.Net.Http.Headers.MediaTypeHeaderValue(ProblemJsonType));
+        result.ContentTypes.Add(new Microsoft.Net.Http.Headers.MediaTypeHeaderValue(ProblemXmlType));
         return result;
     }
 
@@ -96,7 +110,7 @@ public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
             exception?.Message ?? "Unknown"); 
         var context = _httpContextAccessor.HttpContext;
         return WriteResponseAsync(response, 
-            context?.GetProblemResponseTypeFromAccept() ?? _problemJsonType, 
+            context?.GetProblemResponseTypeFromAccept() ?? ProblemJsonType, 
             BuildProblemFromException(context, exception) ?? BuildProblem(context), 
             additionalHeaders,
             cancellationToken);

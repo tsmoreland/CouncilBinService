@@ -100,7 +100,17 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
             }
 
             source = source.Trim();
-            return DateOnly.TryParseExact(source, "ddd d MMM", out date);
+            if (DateOnly.TryParseExact(source, "ddd d MMM", out date))
+            {
+                return true;
+            }
+
+            if (DateOnly.TryParseExact(source, "ddd dd MMM", out date))
+            {
+                return true;
+            }
+
+            return false;
         }
         static bool TryParseFrequency(string source, out TimeSpan frequency)
         {
