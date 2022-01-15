@@ -12,7 +12,6 @@ namespace Tsmoreland.AspNetCore.Api.Diagnostics
             ArgumentNullException.ThrowIfNull(services, nameof(services));
 
             services.AddTransient<IConfigureOptions<ErrorHandlerOptions>, ConfigureErrorHandlerOptions>();
-            services.AddSingleton<ProblemDetailsGenerator>();
             services.AddSingleton<IErrorResponseProvider, ProblemDetailsErrorProvider>();
 
             services.AddSingleton<IConfigureOptions<ApiBehaviorOptions>, ConfigureApiBehaviorOptions>();

@@ -13,18 +13,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Runtime.ExceptionServices;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
@@ -35,23 +27,16 @@ public sealed class ErrorHandlerMiddleware
     private readonly RequestDelegate _next;
     private readonly IOptionsMonitor<ErrorHandlerOptions> _options;
     private readonly IErrorResponseProvider _errorResponseProvider;
-    private readonly ProblemDetailsFactory _problemDetailsFactory;
-    private readonly ILogger _logger;
-    private static readonly Lazy<XmlSerializer> _xmlSerializer = new(() => new XmlSerializer(typeof(ProblemDetails)));
     private readonly List<(string Name, StringValues Values)> _headers = new();
 
     public ErrorHandlerMiddleware(
         RequestDelegate next, 
         IOptionsMonitor<ErrorHandlerOptions> options, 
-        IErrorResponseProvider errorResponseProvider,
-        ILoggerFactory loggerFactory, 
-        ProblemDetailsFactory problemDetailsFactory)
+        IErrorResponseProvider errorResponseProvider)
     {
         _next = next ?? throw new ArgumentNullException(nameof(next));
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _errorResponseProvider = errorResponseProvider ?? throw new ArgumentNullException(nameof(errorResponseProvider));
-        _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
-        _logger = loggerFactory.CreateLogger<ErrorHandlerMiddleware>();
     }
 
     /// <summary>
@@ -121,93 +106,15 @@ public sealed class ErrorHandlerMiddleware
 
     private Task HandleErrorStatus(HttpContext context)
     {
-        int? statusCode = context.Response.StatusCode >= 400
-            ? context.Response.StatusCode
-            : null;
-        if (context.Response.ContentType.StartsWith("application/problem+", StringComparison.OrdinalIgnoreCase))
-        {
-            return Task.CompletedTask;
-        }
-
-        var type = $"https://httpstatuses.com/{statusCode}";
-        var traceId = _options.CurrentValue.TraceIdentifier;
-        var title = ProblemDetailsGenerator.GetErrorStatusDescription(statusCode);
-
-        var problem = BuildProblem(context, statusCode: statusCode, type: type, title: title, traceId: traceId);
-
-        return WriteProblemToResponse(context, problem);
+        return context.Response.StatusCode < 400 
+            ? Task.CompletedTask 
+            : _errorResponseProvider
+                .WriteResponseIfNotSetAsync(context.Response, context, _headers.ToArray())
+                .AsTask();
     }
 
     private Task HandleException(HttpContext context, ExceptionDispatchInfo edi)
     {
-        var traceId = _options.CurrentValue.TraceIdentifier;
-        _logger.LogError(edi.SourceException, "Error occurred processing request");
-
-        var statusCode = context.Response.StatusCode >= 400
-            ? context.Response.StatusCode
-            : 500;
-        var problem = BuildProblem(context, statusCode: statusCode, traceId: traceId);
-
-        return WriteProblemToResponse(context, problem);
+        return _errorResponseProvider.WriteResponseAsync(context.Response, edi, _headers.ToArray()).AsTask();
     }
-
-    private async Task WriteProblemToResponse(HttpContext context, ProblemDetails problem)
-    {
-        var acceptTypes = context.Request.Headers.Accept;
-
-        bool json = acceptTypes.Any(s =>
-            string.Equals(s, MediaTypeNames.Application.Json, StringComparison.OrdinalIgnoreCase));
-        bool xml = acceptTypes.Any(s =>
-            string.Equals(s, MediaTypeNames.Application.Xml, StringComparison.OrdinalIgnoreCase));
-
-        context.Response.Clear();
-        context.Response.StatusCode = problem.Status ?? 500;
-
-        foreach (var pair in _headers)
-        {
-            var (name, value) = pair;
-            context.Response.Headers.Add(name, value);
-        }
-
-        _headers.Clear();
-
-        if (json || !xml)
-        {
-            context.Response.ContentType = "application/problem+json";
-            await context.Response.WriteAsJsonAsync(problem, typeof(ProblemDetails), CancellationToken.None);
-        }
-        else if (xml)
-        {
-            context.Response.ContentType = "application/problem+xml";
-
-            var encoding = new UTF8Encoding(false);
-            await using var writer = new StreamWriter(context.Response.Body, encoding);
-            _xmlSerializer.Value.Serialize(writer, problem);
-        }
-    }
-
-    private ProblemDetails BuildProblem(
-        HttpContext context,
-        string? detail = null,
-        string? instance = null,
-        int? statusCode = null,
-        string? title = null,
-        string? type = null,
-        string? traceId = null)
-    {
-        var problem = _problemDetailsFactory.CreateProblemDetails(
-            context,
-            statusCode: statusCode ?? 500,
-            title: title,
-            type: type,
-            detail: detail,
-            instance: instance);
-        if (traceId is { Length: > 0 })
-        {
-            problem.Extensions["traceId"] = traceId;
-        }
-
-        return problem;
-    }
-
 }
