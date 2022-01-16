@@ -18,7 +18,7 @@ namespace Tsmoreland.AspNetCore.Api.Diagnostics
                 setupAction?.Invoke(options);
             }
 
-            return app.UseMiddleware<ErrorHandlerMiddleware>(options);
+            return app;
 
         }
     }
