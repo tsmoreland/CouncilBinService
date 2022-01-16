@@ -31,6 +31,17 @@ public class ErrorController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
+    [Route("")]
+    public IActionResult Error()
+    {
+        return Error(500);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
     [Route("{id:int?}")]
     public IActionResult Error(int? id)
     {

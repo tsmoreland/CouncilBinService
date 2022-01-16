@@ -123,8 +123,10 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseCorrelationId();
-        app.UseStatusCodePagesWithReExecute("/api/v1/error/{0}");
-        app.UseExceptionHandler("/api/v1/error/500");
+        app.UseStatusCodePagesWithReExecute("/api/v{version:apiVersion}/error/{0}");
+
+        // not working at all at present, no exception gets routed here
+        app.UseExceptionHandler("/api/v{version:apiVersion}/error/");
 
         if (!Environment.IsDevelopment())
         {
@@ -151,9 +153,9 @@ public class Startup
         app.UseSwaggerUI(options =>
         {
             var apiVerionDescriptorProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
-            foreach (var version in apiVerionDescriptorProvider.ApiVersionDescriptions)
+            foreach (string versionGroupName in apiVerionDescriptorProvider.ApiVersionDescriptions.Select(description => description.GroupName))
             {
-                options.SwaggerEndpoint($"/api/{version.GroupName}/swagger.json", version.GroupName.ToUpperInvariant());
+                options.SwaggerEndpoint($"/api/{versionGroupName}/swagger.json", versionGroupName.ToUpperInvariant());
             }
         });
 

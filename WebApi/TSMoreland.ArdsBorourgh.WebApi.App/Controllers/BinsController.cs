@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using TSMoreland.ArdsBorough.Api.DataTransferObjects.Response;
 using TSMoreland.ArdsBorough.Bins.Collections.Shared;
+using Tsmoreland.AspNetCore.Api.Diagnostics;
 using DTO = TSMoreland.ArdsBorough.Api.DataTransferObjects;
 
 namespace TSMoreland.ArdsBorough.WebApi.App.Controllers;
@@ -58,7 +59,8 @@ public class BinsController : ControllerBase
     [Produces(MediaTypeNames.Application.Json)]
     public IActionResult Guess(BadModel model)
     {
-        return Ok(model);
+        //return Ok(model);
+        throw new InvalidModelStateException(ModelState);
     }
 
     /// <summary>

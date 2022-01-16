@@ -22,7 +22,7 @@ public sealed class ValidateModelStateActionFilter : IActionFilter
     {
         if (!context.ModelState.IsValid)
         {
-            throw new InvalidModelStateException(context.ModelState);
+            //throw new InvalidModelStateException(context.ModelState);
         }
 
     }
