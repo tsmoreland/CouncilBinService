@@ -31,15 +31,15 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
     public static RoundInfo ParseOrNone(string source)
     {
         // Mon 11 Oct then every alternate Mon
-        var (splitSuccess, rawBinType, rawDate, rawFrequency) = TrySplit(source);
+        (bool splitSuccess, string rawBinType, string rawDate, string rawFrequency) = TrySplit(source);
         if (!splitSuccess)
         {
             return None;
         }
 
-        if (TryParseBinType(rawBinType, out var binType) &&
-            TryParseDate(rawDate, out var date) &&
-            TryParseFrequency(rawFrequency, out var frequency))
+        if (TryParseBinType(rawBinType, out BinType binType) &&
+            TryParseDate(rawDate, out DateOnly date) &&
+            TryParseFrequency(rawFrequency, out TimeSpan frequency))
         {
             return new RoundInfo(binType, date, frequency);
         }
@@ -53,8 +53,8 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
                 return (false, string.Empty, string.Empty, string.Empty);
             }
 
-            var indexOfColon = source.IndexOf(": ", StringComparison.InvariantCultureIgnoreCase);
-            var indexOfThenEvery = source.IndexOf("THEN EVERY ", StringComparison.InvariantCultureIgnoreCase);
+            int indexOfColon = source.IndexOf(": ", StringComparison.InvariantCultureIgnoreCase);
+            int indexOfThenEvery = source.IndexOf("THEN EVERY ", StringComparison.InvariantCultureIgnoreCase);
             if (indexOfColon == -1 || indexOfThenEvery == -1)
             {
                 return (false, string.Empty, string.Empty, string.Empty);
@@ -100,12 +100,20 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
             }
 
             source = source.Trim();
-            if (DateOnly.TryParseExact(source, "ddd d MMM", out date))
+            if (DateTime.TryParseExact(source, "ddd d MMM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTime))
             {
+                date = new DateOnly(dateTime.Year, dateTime.Month, dateTime.Day);
                 return true;
             }
 
-            if (DateOnly.TryParseExact(source, "ddd dd MMM", out date))
+            // 'ddd ' + some level of a remainder
+            if (source.Length < 5)
+            {
+                return false;
+            }
+
+            source = source[4..];
+            if (DateOnly.TryParseExact(source, "d MMM", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
             {
                 return true;
             }
