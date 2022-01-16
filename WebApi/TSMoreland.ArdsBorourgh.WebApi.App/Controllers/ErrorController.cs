@@ -12,7 +12,7 @@ namespace TSMoreland.ArdsBorough.WebApi.App.Controllers;
 /// </summary>
 [ApiVersion("1")]
 [ApiController]
-[ApiExplorerSettings(IgnoreApi = true)]
+[Route("api/v{version:apiVersion}/error")]
 public class ErrorController : ControllerBase
 {
     private readonly ILogger<ErrorController> _logger;
@@ -31,10 +31,10 @@ public class ErrorController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    [Route("api/error/{id:int?}")]
+    [Route("{id:int?}")]
     public IActionResult Error(int? id)
     {
-        IExceptionHandlerPathFeature context = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+        IExceptionHandlerPathFeature? context = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
         Exception? exception = context?.Error;
 
         _logger.LogCritical(exception,"Unhandled exception in request {TraceIdentifier}: {Exception}",

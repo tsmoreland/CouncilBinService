@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Mime;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using TSMoreland.ArdsBorough.Api.DataTransferObjects.Response;
@@ -14,6 +18,16 @@ using TSMoreland.ArdsBorough.Bins.Collections.Shared;
 using DTO = TSMoreland.ArdsBorough.Api.DataTransferObjects;
 
 namespace TSMoreland.ArdsBorough.WebApi.App.Controllers;
+
+public sealed class BadModel
+{
+    [Required]
+    public string Id { get; set; } = null!;
+
+    [Required]
+    [Range(5, 10)]
+    public int Value { get; set; } = -1;
+}
 
 /// <summary/>
 [Route("api/v{version:apiVersion}/bins")]
@@ -30,6 +44,21 @@ public class BinsController : ControllerBase
         _binCollectionService = binCollectionService ?? throw new ArgumentNullException(nameof(binCollectionService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new System.ArgumentNullException(nameof(logger));
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    [HttpPost]
+    [Route("guess")]
+    [ApiVersion("1")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public IActionResult Guess(BadModel model)
+    {
+        return Ok(model);
     }
 
     /// <summary>
@@ -97,14 +126,17 @@ public class BinsController : ControllerBase
     [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)] 
     [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
     [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
-    public async Task<IActionResult> GetNextWeeksType([FromRoute] string postcode, [FromRoute] int houseNumber, CancellationToken cancellationToken)
+    public async IAsyncEnumerable<BinCollectionSummary> GetNextWeeksType([FromRoute] string postcode, [FromRoute] int houseNumber, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var collection = await _binCollectionService
+        IAsyncEnumerable<BinCollectionSummary> collection = _binCollectionService
             .FindNextWeeksBinCollectionInfoForAddress(houseNumber, new PostCode(postcode), cancellationToken)
-            .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
-            .ToListAsync(cancellationToken);
+            .Select(pair => _mapper.Map<BinCollectionSummary>(pair));
 
-        return Ok(collection);
+        await foreach (BinCollectionSummary summary in collection.WithCancellation(cancellationToken))
+        {
+            yield return summary;
+        }
+
     }
 
     /// <summary>
@@ -166,5 +198,12 @@ public class BinsController : ControllerBase
     public IActionResult GetCollectionPeriod([FromRoute] string postcode, [FromRoute] int houseNumber, [FromRoute] DTO.BinType binType, CancellationToken cancellationToken)
     {
         return Ok("blue");
+    }
+
+
+    /// <inheritdoc/>
+    public override ActionResult ValidationProblem([ActionResultObjectValue] ModelStateDictionary modelStateDictionary)
+    {
+        return base.ValidationProblem(modelStateDictionary);
     }
 }

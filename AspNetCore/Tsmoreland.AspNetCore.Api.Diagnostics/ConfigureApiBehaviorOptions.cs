@@ -12,7 +12,6 @@ public sealed class ConfigureApiBehaviorOptions : IConfigureOptions<ApiBehaviorO
         options.SuppressModelStateInvalidFilter = true;
         options.SuppressMapClientErrors = true;
 
-        // to see if we can cause error and redirect to error controller
-        options.InvalidModelStateResponseFactory = context => throw new System.Exception();
+        options.InvalidModelStateResponseFactory = context => throw new Exception();
     }
 }

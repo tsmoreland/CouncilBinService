@@ -9,46 +9,27 @@
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// 
+//
 
-using System;
-using System.Net.Mime;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Tsmoreland.AspNetCore.Api.Diagnostics;
 
-public static class HttpContextExtensions
+public sealed class ValidateModelStateActionFilter : IActionFilter
 {
-    public static string GetProblemResponseTypeFromAccept(this HttpContext context)
+    /// <inheritdoc />
+    public void OnActionExecuting(ActionExecutingContext context)
     {
-        StringValues acceptTypes = context.Request.Headers.Accept;
-
-        bool json = false;
-        bool xml = false;
-
-        foreach (string acceptType in acceptTypes)
+        if (!context.ModelState.IsValid)
         {
-            if (!json && string.Equals(acceptType, MediaTypeNames.Application.Json, StringComparison.OrdinalIgnoreCase))
-            {
-                json = true;
-            }
-            if (!json && string.Equals(acceptType, MediaTypeNames.Application.Xml, StringComparison.OrdinalIgnoreCase))
-            {
-                xml = true;
-            }
-
-            if (json && xml)
-            {
-                break;
-            }
+            throw new InvalidModelStateException(context.ModelState);
         }
 
-        if (xml && !json)
-        {
-            return "application/problem+xml";
-        }
+    }
 
-        return "application/problem+json";
+    /// <inheritdoc />
+    public void OnActionExecuted(ActionExecutedContext context)
+    {
+        // no-op
     }
 }

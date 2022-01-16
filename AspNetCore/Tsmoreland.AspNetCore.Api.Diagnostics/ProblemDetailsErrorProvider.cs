@@ -1,48 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 
 namespace Tsmoreland.AspNetCore.Api.Diagnostics;
 
 public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
 {
     private readonly ProblemDetailsFactory _problemDetailsFactory;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<ProblemDetailsErrorProvider> _logger;
     private const string ProblemJsonType = "application/problem+json";
     private const string ProblemXmlType = "application/problem+xml";
 
     public ProblemDetailsErrorProvider(
-        IHttpContextAccessor httpContextAccessor, 
-        ILoggerFactory loggerFactory)
-    {
-        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-
-        ArgumentNullException.ThrowIfNull(loggerFactory, nameof(loggerFactory));
-        _logger = loggerFactory.CreateLogger<ProblemDetailsErrorProvider>();
-
-        _problemDetailsFactory = null!;
-    }
-
-    /*
-    public ProblemDetailsErrorProvider(
         ProblemDetailsFactory problemDetailsFactory,
-        IHttpContextAccessor httpContextAccessor,
         ILoggerFactory loggerFactory)
     {
         _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
-        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         ArgumentNullException.ThrowIfNull(loggerFactory, nameof(loggerFactory));
         _logger = loggerFactory.CreateLogger<ProblemDetailsErrorProvider>();
     }
-    */
 
     /// <inheritdoc/>
     public IActionResult Build(ActionContext context)
@@ -62,117 +40,22 @@ public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
         return result;
     }
 
-    /// <inheritdoc/>
-    public ValueTask WriteResponseIfNotSetAsync(
-        HttpResponse response, 
-        HttpContext context, 
-        IEnumerable<(string Name, StringValues Values)> additionalHeaders, 
-        CancellationToken cancellationToken = default)
-    {
-        _logger.LogError("Return error {StatusCode}", context.Response.StatusCode);
 
-        // do nothing if content-type is a problem type already
-        var contentType = response.ContentType;
-        if (string.Equals(contentType, "application/problem+json", StringComparison.OrdinalIgnoreCase) || 
-            string.Equals(contentType, "application/problem+xml", StringComparison.OrdinalIgnoreCase))
-        {
-            return ValueTask.CompletedTask;
-        }
-
-        return WriteResponseAsync(response, context.GetProblemResponseTypeFromAccept(), BuildProblem(context), additionalHeaders, cancellationToken);
-    }
-
-    /// <inheritdoc/>
-    public ValueTask WriteResponseAsync(
-        HttpResponse response, 
-        ExceptionDispatchInfo? edi, 
-        IEnumerable<(string Name, StringValues Values)> additionalHeaders, 
-        CancellationToken cancellationToken = default)
-    {
-        _logger.LogError(edi?.SourceException, "Exception occurred, returning error {Message}",
-            edi?.SourceException.Message ?? "Unknown"); 
-        var context = _httpContextAccessor.HttpContext;
-        return WriteResponseAsync(response, 
-            context?.GetProblemResponseTypeFromAccept() ?? "application/problem+json", 
-            BuildProblemFromException(context, edi?.SourceException) ?? BuildProblem(context), 
-            additionalHeaders,
-            cancellationToken);
-    }
-
-    /// <inheritdoc/>
-    public ValueTask WriteResponseAsync(
-        HttpResponse response, 
-        Exception? exception, 
-        IEnumerable<(string Name, StringValues Values)> additionalHeaders, 
-        CancellationToken cancellationToken = default)
-    {
-        _logger.LogError(exception, "Exception occurred, returning error {Message}",
-            exception?.Message ?? "Unknown"); 
-        var context = _httpContextAccessor.HttpContext;
-        return WriteResponseAsync(response, 
-            context?.GetProblemResponseTypeFromAccept() ?? ProblemJsonType, 
-            BuildProblemFromException(context, exception) ?? BuildProblem(context), 
-            additionalHeaders,
-            cancellationToken);
-    }
-
-    /// <inheritdoc/>
-    public ValueTask WriteResponseAsync(
-        HttpResponse response, 
-        IEnumerable<(string Name, StringValues Values)> additionalHeaders, 
-        int statusCode, 
-        string? title = null, 
-        string? details = null, 
-        CancellationToken cancellationToken = default)
-    {
-        _logger.LogError("Return error {StatusCode}: {Title}", statusCode, title);
-        var context = _httpContextAccessor.HttpContext;
-        return WriteResponseAsync(response, 
-            "application/problem+json", 
-            BuildProblem(context, details,  statusCode: statusCode, title: title), 
-            additionalHeaders,
-            cancellationToken);
-    }
-
-    private static ValueTask WriteResponseAsync(
-        HttpResponse response, 
-        string contentType, 
-        ProblemDetails problem, 
-        IEnumerable<(string Name, StringValues Values)> additionalHeaders, 
-        CancellationToken cancellationToken)
-    {
-        if (response.HasStarted)
-        {
-            throw new NotSupportedException("Unable to write content after response has started");
-        }
-        response.ContentType = contentType;
-        response.StatusCode = problem.Status ?? StatusCodes.Status500InternalServerError;
-
-        foreach (var pair in additionalHeaders)
-        {
-            var (name, value) = pair;
-            response.Headers.Add(name, value);
-        }
-
-        return new ValueTask(response.WriteAsJsonAsync(problem, cancellationToken));
-    }
-
-    private ProblemDetails? BuildProblemFromException(HttpContext? context, Exception? exception)
+    public ProblemDetails? BuildProblemFromException(int? statusCode, HttpContext? context, Exception? exception)
     {
         if (exception == null)
         {
             return null;
         }
 
-        var statusCode = context?.Response.StatusCode >= 400
-            ? context.Response.StatusCode 
-            : StatusCodes.Status500InternalServerError;
+        int status = statusCode ?? StatusCodes.Status500InternalServerError;
+
         ProblemDetails problem;
         if (context != null)
         {
             problem = _problemDetailsFactory.CreateProblemDetails(
                 context,
-                statusCode,
+                status,
                 GetErrorStatusDescription(statusCode),
                 $"https://httpstatuses.com/{statusCode}");
             problem.Extensions["traceId"] = context.TraceIdentifier;
@@ -190,7 +73,7 @@ public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
         return problem;
     }
 
-    private ProblemDetails BuildProblem(
+    public ProblemDetails BuildProblem(
         HttpContext? context,
         string? detail = null,
         string? instance = null,

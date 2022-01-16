@@ -64,6 +64,7 @@ public class Startup
         });
         services.AddMvcCore(options =>
         {
+            options.Filters.Add(new ValidateModelStateActionFilter());
         });
         services.AddHttpContextAccessor();
         services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'V");
@@ -122,8 +123,8 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseCorrelationId();
-        app.UseStatusCodePagesWithReExecute("/api/error/{0}");
-        app.UseExceptionHandler("/api/error/");
+        app.UseStatusCodePagesWithReExecute("/api/v1/error/{0}");
+        app.UseExceptionHandler("/api/v1/error/500");
 
         if (!Environment.IsDevelopment())
         {
