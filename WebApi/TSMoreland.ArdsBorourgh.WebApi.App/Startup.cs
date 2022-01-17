@@ -72,7 +72,7 @@ public class Startup
 
         services.AddSwaggerGenWithVersioning((options, provider) =>
         {
-            foreach (var version in provider.ApiVersionDescriptions)
+            foreach (ApiVersionDescription version in provider.ApiVersionDescriptions)
             {
                 options.SwaggerDoc(version.GroupName, 
                     new OpenApiInfo
@@ -117,16 +117,22 @@ public class Startup
 
         services.AddErrorHandler();
         services.AddWebApiInfrastructure();
+
+        // needed if/when controllers come from another library
+        services
+            .AddControllers()
+            .AddApplicationPart(typeof(Startup).Assembly)
+            .AddControllersAsServices();
     }
 
     /// <summary/>
     public void Configure(IApplicationBuilder app)
     {
         app.UseCorrelationId();
-        app.UseStatusCodePagesWithReExecute("/api/v{version:apiVersion}/error/{0}");
 
-        // not working at all at present, no exception gets routed here
-        app.UseExceptionHandler("/api/v{version:apiVersion}/error/");
+        // not working with versioning, may need custom middleware to accomplish this
+        app.UseStatusCodePagesWithReExecute("/api/v{version:apiVersion}/error/{0}");
+        app.UseExceptionHandler(error => error.UseProblemDetailsError(Environment));
 
         if (!Environment.IsDevelopment())
         {
