@@ -26,7 +26,7 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
     /// </summary>
     public TimeSpan Fequency { get; init; } = Frequency;
 
-    public static RoundInfo None { get; } = new (BinType.Unknown, DateOnly.MinValue, TimeSpan.Zero);
+    public static RoundInfo None { get; } = new(BinType.Unknown, DateOnly.MinValue, TimeSpan.Zero);
 
     public static RoundInfo ParseOrNone(string source)
     {
@@ -48,7 +48,7 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
 
         static (bool Succless, string RawBinType, string RawDate, string RawFrequency) TrySplit(string source)
         {
-            if (source is not { Length: >0 })
+            if (source is not { Length: > 0 })
             {
                 return (false, string.Empty, string.Empty, string.Empty);
             }
@@ -72,7 +72,7 @@ public sealed record RoundInfo(BinType Type, DateOnly Collection, TimeSpan Frequ
             binType = BinType.Unknown;
 
             bool success;
-            (success, binType) = source.Trim().ToUpperInvariant() switch 
+            (success, binType) = source.Trim().ToUpperInvariant() switch
             {
                 "GREY BIN" => (true, BinType.Black),
                 "BLUE BIN" => (true, BinType.Blue),
