@@ -48,22 +48,6 @@ public class BinsController : ControllerBase
     }
 
     /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="model"></param>
-    /// <returns></returns>
-    [HttpPost]
-    [Route("guess")]
-    [ApiVersion("1")]
-    [Consumes(MediaTypeNames.Application.Json)]
-    [Produces(MediaTypeNames.Application.Json)]
-    public IActionResult Guess(BadModel model)
-    {
-        //return Ok(model);
-        throw new InvalidModelStateException(ModelState);
-    }
-
-    /// <summary>
     /// Get a summary of all upcoming bin collection details
     /// </summary>
     /// <param name="postcode" example="SW1A 1AA" >postcode of the address to find details of</param>
