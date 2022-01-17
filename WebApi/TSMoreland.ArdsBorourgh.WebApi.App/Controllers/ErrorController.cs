@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
 
 namespace TSMoreland.ArdsBorough.WebApi.App.Controllers;
@@ -15,13 +16,15 @@ namespace TSMoreland.ArdsBorough.WebApi.App.Controllers;
 [Route("api/v{version:apiVersion}/error")]
 public class ErrorController : ControllerBase
 {
+    private readonly ProblemDetailsFactory _problemDetailsFactory;
     private readonly ILogger<ErrorController> _logger;
 
     /// <summary>
     /// Instantiates a new instance of the <see cref="ErrorController"/> class.
     /// </summary>
-    public ErrorController(ILoggerFactory loggerFactory)
+    public ErrorController(ProblemDetailsFactory problemDetailsFactory, ILoggerFactory loggerFactory)
     {
+        _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
         _logger = loggerFactory.CreateLogger<ErrorController>();
     }
 
@@ -31,19 +34,8 @@ public class ErrorController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    [Route("")]
-    public IActionResult Error()
-    {
-        return Error(500);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    [HttpGet]
-    [Route("{id:int?}")]
-    public IActionResult Error(int? id)
+    [Route("{id:int}")]
+    public IActionResult Error(int id)
     {
         IExceptionHandlerPathFeature? context = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
         Exception? exception = context?.Error;
@@ -52,15 +44,9 @@ public class ErrorController : ControllerBase
             HttpContext.TraceIdentifier,
             exception?.GetBaseException().ToString() ?? "no exception available");
 
-        int statusCode = id ?? StatusCodes.Status500InternalServerError;
-        ProblemDetails problemDetails = new ()
-        {
-            Status = statusCode,
-            Title = "Temporary Title",
-            Detail = "Temporary Description",
-            Instance = context?.Path,
-        };
-
+        int statusCode = id;
+        ProblemDetails problemDetails = _problemDetailsFactory
+            .CreateProblemDetails(HttpContext, statusCode);
         return new ObjectResult(problemDetails) { StatusCode = statusCode };
     }
 
