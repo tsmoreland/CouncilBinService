@@ -47,13 +47,23 @@ public static class ProblemDetailsExceptionHandler
         if (ex is InvalidModelStateException invalidModelStateException)
         {
             ValidationProblemDetails problem = problemDetailsFactory.CreateValidationProblemDetails(httpContext,
-                invalidModelStateException.ModelState, StatusCodes.Status422UnprocessableEntity, "Invalid Model State", detail: "One or more fields has invalid values");
+                invalidModelStateException.ModelState, StatusCodes.Status422UnprocessableEntity,
+                "Invalid Model State",
+                detail: "One or more fields has invalid values",
+                instance:  httpContext.Request.ToString());
             return JsonSerializer.SerializeAsync(httpContext.Response.Body, problem);
         }
         else
         {
-            ProblemDetails problem = problemDetailsFactory.CreateProblemDetails(httpContext);
+            ProblemDetails problem = problemDetailsFactory.CreateProblemDetails(httpContext,
+                instance: FormatInstance(httpContext.Request));
             return JsonSerializer.SerializeAsync(httpContext.Response.Body, problem);
+        }
+
+        static string FormatInstance(HttpRequest request)
+        {
+            return $"{request.Scheme}://{request.Host.ToUriComponent()}/{request.Path}";
+
         }
 
     }
