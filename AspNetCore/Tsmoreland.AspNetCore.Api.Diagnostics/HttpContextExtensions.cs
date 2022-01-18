@@ -50,4 +50,20 @@ public static class HttpContextExtensions
 
         return "application/problem+json";
     }
+
+    public static Uri? ToRequestUriOrNull(this HttpContext httpContext)
+    {
+        HttpRequest request = httpContext.Request;
+        string url = $"{request.Scheme}://{request.Host.ToUriComponent()}/{request.Path}";
+
+        UriCreationOptions options = new ()
+        {
+            DangerousDisablePathAndQueryCanonicalization = false,
+        };
+
+        return Uri.TryCreate(url, options, out Uri? uri)
+            ? uri
+            : null;
+    }
+
 }

@@ -11,11 +11,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace Tsmoreland.AspNetCore.Api.Diagnostics;
@@ -32,11 +27,6 @@ public sealed class EndpointNotFoundMiddleware
     public async Task Invoke(HttpContext context)
     {
         await _next(context);
-        if (context.Response.StatusCode == StatusCodes.Status404NotFound)
-        {
-            throw new Exception("Not Found");
-            //context.Request.Path = "/api/v1/error/404";
-            //await _next(context);
-        }
+        EndpointNotFoundException.ThrowIfStatusCodeIs404(context);
     }
 }
