@@ -1,34 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿//
+// Copyright © 2022 Terry Moreland
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
 using System.Net.Mime;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using TSMoreland.ArdsBorough.Api.DataTransferObjects.Response;
 using TSMoreland.ArdsBorough.Bins.Collections.Shared;
-using Tsmoreland.AspNetCore.Api.Diagnostics;
 using DTO = TSMoreland.ArdsBorough.Api.DataTransferObjects;
 
 namespace TSMoreland.ArdsBorough.WebApi.App.Controllers;
-
-public sealed class BadModel
-{
-    [Required]
-    public string Id { get; set; } = null!;
-
-    [Required]
-    [Range(5, 10)]
-    public int Value { get; set; } = -1;
-}
 
 /// <summary/>
 [Route("api/v{version:apiVersion}/bins")]
@@ -59,17 +53,20 @@ public class BinsController : ControllerBase
     [ApiVersion("1")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)] 
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
-    public async Task<IActionResult> GetAllUpcoming([FromRoute] string postcode, [FromRoute] int houseNumber, CancellationToken cancellationToken)
+    [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
+    public async IAsyncEnumerable<BinCollectionSummary> GetAllUpcoming([FromRoute] string postcode, [FromRoute] int houseNumber, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var collections = await _binCollectionService
+        IAsyncEnumerable<BinCollectionSummary> collections = _binCollectionService
             .FindBinCollectionInfoForAddress(houseNumber, new PostCode(postcode), cancellationToken)
             .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
-            .ToListAsync(cancellationToken);
+            .AsAsyncEnumerable();
 
-        return Ok(collections);
+        await foreach (BinCollectionSummary summary in collections.WithCancellation(cancellationToken))
+        {
+            yield return summary;
+        }
     }
 
     /// <summary>
@@ -84,17 +81,20 @@ public class BinsController : ControllerBase
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
     [ApiVersion("1")]
-    [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)] 
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
-    public async Task<IActionResult> GetThisWeeksType([FromRoute] string postcode, [FromRoute] int houseNumber, CancellationToken cancellationToken)
+    [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
+    public async IAsyncEnumerable<BinCollectionSummary> GetThisWeeksType([FromRoute] string postcode, [FromRoute] int houseNumber, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var collection = await _binCollectionService
+        IAsyncEnumerable<BinCollectionSummary> collections = _binCollectionService
             .FindThisWeeksBinCollectionInfoForAddress(houseNumber, new PostCode(postcode), cancellationToken)
             .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
-            .ToListAsync(cancellationToken);
+            .AsAsyncEnumerable();
 
-        return Ok(collection);
+        await foreach (BinCollectionSummary summary in collections.WithCancellation(cancellationToken))
+        {
+            yield return summary;
+        }
     }
 
     /// <summary>
@@ -109,14 +109,15 @@ public class BinsController : ControllerBase
     [ApiVersion("1")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)] 
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
+    [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
     public async IAsyncEnumerable<BinCollectionSummary> GetNextWeeksType([FromRoute] string postcode, [FromRoute] int houseNumber, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         IAsyncEnumerable<BinCollectionSummary> collection = _binCollectionService
             .FindNextWeeksBinCollectionInfoForAddress(houseNumber, new PostCode(postcode), cancellationToken)
-            .Select(pair => _mapper.Map<BinCollectionSummary>(pair));
+            .Select(pair => _mapper.Map<BinCollectionSummary>(pair))
+            .AsAsyncEnumerable();
 
         await foreach (BinCollectionSummary summary in collection.WithCancellation(cancellationToken))
         {
@@ -137,9 +138,9 @@ public class BinsController : ControllerBase
     [ApiVersion("0")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)] 
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
+    [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
     public IActionResult GetFullDetailsForThisWeek([FromRoute] string postcode, [FromRoute] int houseNumber, CancellationToken cancellationToken)
     {
         return Ok("blue");
@@ -158,8 +159,8 @@ public class BinsController : ControllerBase
     [ApiVersion("0")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
     public IActionResult GetNextDateForType([FromRoute] string postcode, [FromRoute] int houseNumber, [FromRoute] DTO.BinType binType, CancellationToken cancellationToken)
     {
         return Ok("blue");
@@ -179,8 +180,8 @@ public class BinsController : ControllerBase
     [ApiVersion("0")]
     [Consumes(MediaTypeNames.Application.Json)]
     [Produces(MediaTypeNames.Application.Json)]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)] 
+    [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
     public IActionResult GetCollectionPeriod([FromRoute] string postcode, [FromRoute] int houseNumber, [FromRoute] DTO.BinType binType, CancellationToken cancellationToken)
     {
         return Ok("blue");

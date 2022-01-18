@@ -1,24 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿//
+// Copyright © 2022 Terry Moreland
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
 using System.IO.Compression;
-using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using TSMoreland.ArdsBorough.WebApi.Infrastructure;
 using Tsmoreland.AspNetCore.Api.Diagnostics;
+using TSMoreland.ArdsBorough.WebApi.Infrastructure;
 using TSMoreland.WebApi.Middleware;
 using TSMoreland.WebApi.Middleware.SwaggerFilters;
 
@@ -58,7 +62,7 @@ public class Startup
             options.Providers.Add<GzipCompressionProvider>();
             options.EnableForHttps = true;
         });
-        services.Configure<BrotliCompressionProviderOptions>(options => 
+        services.Configure<BrotliCompressionProviderOptions>(options =>
         {
             options.Level = CompressionLevel.Optimal;
         });
@@ -74,7 +78,7 @@ public class Startup
         {
             foreach (ApiVersionDescription version in provider.ApiVersionDescriptions)
             {
-                options.SwaggerDoc(version.GroupName, 
+                options.SwaggerDoc(version.GroupName,
                     new OpenApiInfo
                     {
                         Title = $"ArdsBorough Api {version.GroupName}",
@@ -131,8 +135,9 @@ public class Startup
         app.UseCorrelationId();
 
         // not working with versioning, may need custom middleware to accomplish this
-        app.UseStatusCodePagesWithReExecute("/api/v{version:apiVersion}/error/{0}");
+        //app.UseStatusCodePagesWithReExecute("/api/v{version:apiVersion}/error/{0}");
         app.UseExceptionHandler(error => error.UseProblemDetailsError(Environment));
+        app.UseMiddleware<EndpointNotFoundMiddleware>();
 
         if (!Environment.IsDevelopment())
         {
