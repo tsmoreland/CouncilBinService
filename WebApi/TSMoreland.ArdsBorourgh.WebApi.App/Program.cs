@@ -14,7 +14,7 @@
 using System.Reflection;
 using TSMoreland.ArdsBorough.WebApi.App;
 
-var appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+string? appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 if (appPath is { Length: > 0 })
 {
     Directory.SetCurrentDirectory(appPath);

@@ -15,6 +15,7 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.HostFiltering;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -109,7 +110,7 @@ public class Startup
             var existingFiles = xmlFiles
                 .Select(file => Path.Combine(AppContext.BaseDirectory, file))
                 .Where(File.Exists);
-            foreach (var file in existingFiles)
+            foreach (string file in existingFiles)
             {
                 options.IncludeXmlComments(file);
             }
@@ -127,6 +128,9 @@ public class Startup
             .AddControllers()
             .AddApplicationPart(typeof(Startup).Assembly)
             .AddControllersAsServices();
+
+        services.Configure<HostFilteringOptions>(
+            options => options.IncludeFailureMessage = false);
     }
 
     /// <summary/>
@@ -134,10 +138,9 @@ public class Startup
     {
         app.UseCorrelationId();
 
-        // not working with versioning, may need custom middleware to accomplish this
-        //app.UseStatusCodePagesWithReExecute("/api/v{version:apiVersion}/error/{0}");
         app.UseExceptionHandler(error => error.UseProblemDetailsError(Environment));
-        app.UseMiddleware<EndpointNotFoundMiddleware>();
+        // only handles 404 for now, may need to expand to other codes as wellk
+        app.UseEndpointNotFoundToExceptionTranslator();
 
         if (!Environment.IsDevelopment())
         {
