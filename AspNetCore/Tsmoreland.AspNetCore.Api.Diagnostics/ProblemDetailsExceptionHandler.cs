@@ -11,12 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -27,44 +22,6 @@ public static class ProblemDetailsExceptionHandler
     public static void UseProblemDetailsError(this IApplicationBuilder app, IHostEnvironment environment)
     {
         IErrorResponseProvider errorResponseProvider = app.ApplicationServices.GetRequiredService<IErrorResponseProvider>();
-
-        ProblemDetailsFactory problemDetailsFactory = app.ApplicationServices.GetRequiredService<ProblemDetailsFactory>();
-
-        app.Use((context, next) => WriteResponse(context, next, errorResponseProvider, problemDetailsFactory, includeDetails: environment.IsDevelopment()));
-    }
-
-    private static Task WriteResponse(HttpContext httpContext, Func<Task> next, IErrorResponseProvider errorResponseProvider, ProblemDetailsFactory problemDetailsFactory, bool includeDetails)
-    {
-        IExceptionHandlerFeature? exceptionDetails = httpContext.Features.Get<IExceptionHandlerFeature>();
-        Exception? ex = exceptionDetails?.Error;
-
-        if (ex is null)
-        {
-            return next();
-        }
-
-        httpContext.Response.ContentType = "application/problem+json; charset=UTF-8";
-        if (ex is InvalidModelStateException invalidModelStateException)
-        {
-            ValidationProblemDetails problem = problemDetailsFactory.CreateValidationProblemDetails(httpContext,
-                invalidModelStateException.ModelState, StatusCodes.Status422UnprocessableEntity,
-                "Invalid Model State",
-                detail: "One or more fields has invalid values",
-                instance:  httpContext.Request.ToString());
-            return JsonSerializer.SerializeAsync(httpContext.Response.Body, problem);
-        }
-        else
-        {
-            ProblemDetails problem = problemDetailsFactory.CreateProblemDetails(httpContext,
-                instance: FormatInstance(httpContext.Request));
-            return JsonSerializer.SerializeAsync(httpContext.Response.Body, problem);
-        }
-
-        static string FormatInstance(HttpRequest request)
-        {
-            return $"{request.Scheme}://{request.Host.ToUriComponent()}/{request.Path}";
-
-        }
-
+        app.Use((context, next) => errorResponseProvider.WriteErrorResponse(context, next));
     }
 }
