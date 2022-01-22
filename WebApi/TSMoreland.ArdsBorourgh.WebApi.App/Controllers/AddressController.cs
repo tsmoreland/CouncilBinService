@@ -40,9 +40,14 @@ namespace TSMoreland.ArdsBorough.WebApi.App.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Successful response.", typeof(List<BinCollectionSummary>), MediaTypeNames.Application.Json)]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid argument.", typeof(ProblemDetails), MediaTypeNames.Application.Json)]
-        public IActionResult GetURPNFromPostCodeAndHouseNumber([FromRoute] string postcode, [FromRoute] int houseNumber)
+        public IActionResult GetUrpnFromPostCodeAndHouseNumber([FromRoute] string postcode, [FromRoute] int houseNumber)
         {
             var postcodeValue = PostCode.ConvertOrThrow(postcode);
+
+
+            // payload
+            // SearchForProp#CalendarSearch###{postcode}#####https://collections-ardsandnorthdown.azurewebsites.net/calendar.html
+            // { "d": "{ ... }" } -- payload is in quotes, extra that out and we'll get an HTML property containing HTML, look for populAddr for address text (including house number) and urpbnbuton[0-9]* for urpn number
 
 
             return Ok();
