@@ -11,18 +11,47 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Tsmoreland.AspNetCore.Api.Diagnostics;
 
+[Serializable]
 public sealed class InvalidModelStateException : Exception
 {
 
     public InvalidModelStateException(ModelStateDictionary modelState)
-        : base()
+        : this(modelState, null, null)
+    {
+    }
+    public InvalidModelStateException(ModelStateDictionary modelState, string? message)
+        : this(modelState, message, null)
+    {
+    }
+    public InvalidModelStateException(ModelStateDictionary modelState, string? message, Exception? innerException)
+        :  base(message, innerException)
     {
         ModelState = modelState;
     }
 
+    private InvalidModelStateException(SerializationInfo serializationInfo, StreamingContext streamingContext)
+        : base(serializationInfo, streamingContext)
+    {
+        // no attempt to deserialize or serialize this for now
+        ModelState = new ModelStateDictionary();
+    }
+
+    /// <summary>
+    /// Model State containing errors which were the reason for the exception
+    /// </summary>
     public ModelStateDictionary ModelState { get; }
+
+    public static void ThrowIfNotValid(ModelStateDictionary modelState, string? message = null)
+    {
+        ArgumentNullException.ThrowIfNull(modelState, nameof(modelState));
+        if (!modelState.IsValid)
+        {
+            throw new InvalidModelStateException(modelState, message);
+        }
+    }
 }

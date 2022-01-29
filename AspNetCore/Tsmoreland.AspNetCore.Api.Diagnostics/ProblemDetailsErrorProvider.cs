@@ -16,25 +16,17 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.Extensions.Logging;
 
 namespace Tsmoreland.AspNetCore.Api.Diagnostics;
 
 public sealed class ProblemDetailsErrorProvider : IErrorResponseProvider
 {
     private readonly ProblemDetailsFactory _problemDetailsFactory;
-    private readonly ILogger<ProblemDetailsErrorProvider> _logger;
     private const string ProblemJsonType = "application/problem+json; charset=UTF-8";
-    private const string ProblemXmlType = "application/problem+xml; charset=UTF-8";
 
-    public ProblemDetailsErrorProvider(
-        ProblemDetailsFactory problemDetailsFactory,
-        ILoggerFactory loggerFactory)
+    public ProblemDetailsErrorProvider(ProblemDetailsFactory problemDetailsFactory)
     {
         _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
-
-        ArgumentNullException.ThrowIfNull(loggerFactory, nameof(loggerFactory));
-        _logger = loggerFactory.CreateLogger<ProblemDetailsErrorProvider>();
     }
 
     /// <inheritdoc/>
