@@ -72,8 +72,14 @@ public class Startup
             options.Filters.Add(new ValidateModelStateActionFilter());
         });
         services.AddHttpContextAccessor();
-        services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'V");
-        services.AddApiVersioning(options => options.ApiVersionReader = new UrlSegmentApiVersionReader());
+        services
+            .AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'V")
+            .AddApiVersioning(options =>
+            {
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+            });
 
         services.AddSwaggerGenWithVersioning((options, provider) =>
         {
@@ -138,9 +144,11 @@ public class Startup
     {
         app.UseCorrelationId();
 
-        app.UseExceptionHandler(error => error.UseProblemDetailsError(Environment));
+        app.UseExceptionHandler("/error");
+        app.UseStatusCodePagesWithRedirects("/error/{0}");
+        //app.UseExceptionHandler(error => error.UseProblemDetailsError(Environment));
         // only handles 404 for now, may need to expand to other codes as wellk
-        app.UseEndpointNotFoundToExceptionTranslator();
+        //app.UseEndpointNotFoundToExceptionTranslator();
 
         if (!Environment.IsDevelopment())
         {

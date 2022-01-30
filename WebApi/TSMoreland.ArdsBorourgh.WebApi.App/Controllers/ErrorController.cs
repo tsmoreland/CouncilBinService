@@ -13,60 +13,35 @@
 
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace TSMoreland.ArdsBorough.WebApi.App.Controllers;
 
 /// <summary>
 /// based on <a href="https://docs.microsoft.com/en-us/aspnet/core/web-api/handle-errors?view=aspnetcore-6.0">Handle errors in ASP.NET Core web APIs</a>
 /// </summary>
-[ApiVersion("1")]
 [ApiController]
-[Route("api/v{version:apiVersion}/error")]
 public class ErrorController : ControllerBase
 {
-    private readonly ProblemDetailsFactory _problemDetailsFactory;
-    private readonly ILogger<ErrorController> _logger;
-
-    /// <summary>
-    /// Instantiates a new instance of the <see cref="ErrorController"/> class.
-    /// </summary>
-    public ErrorController(ProblemDetailsFactory problemDetailsFactory, ILoggerFactory loggerFactory)
-    {
-        _problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
-        _logger = loggerFactory.CreateLogger<ErrorController>();
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
+    /// <summary/>
     [HttpGet]
-    [Route("{id:int}")]
-    public IActionResult Error(int id)
-    {
-        IExceptionHandlerPathFeature? context = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-        Exception? exception = context?.Error;
+    [Route("/error/{statusCode:int}")]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    [IgnoreAntiforgeryToken]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public IActionResult HandleEndpointNotFound(int statusCode) =>
+        Problem(statusCode: statusCode);
 
-        _logger.LogCritical(exception, "Unhandled exception in request {TraceIdentifier}: {Exception}",
-            HttpContext.TraceIdentifier,
-            exception?.GetBaseException().ToString() ?? "no exception available");
-
-        int statusCode = id;
-        ProblemDetails problemDetails = _problemDetailsFactory
-            .CreateProblemDetails(HttpContext, statusCode);
-        return new ObjectResult(problemDetails) { StatusCode = statusCode };
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="webHostEnvironment"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
+    /// <summary/>
     [HttpGet]
-    [Route("api/error-dev")]
+    [HttpPost]
+    [HttpPut]
+    [HttpDelete]
+    [HttpHead]
+    [HttpOptions]
+    [Route("/error")]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    [IgnoreAntiforgeryToken]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public IActionResult ErrorLocalDevelopment([FromServices] IWebHostEnvironment webHostEnvironment)
     {
         if (webHostEnvironment.EnvironmentName != "Development")
@@ -75,16 +50,20 @@ public class ErrorController : ControllerBase
                 "This shouldn't be invoked in non-development environments.");
         }
 
-        var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
-        if (context is not null)
+        IExceptionHandlerFeature? context = HttpContext.Features.Get<IExceptionHandlerFeature>();
+
+        if (webHostEnvironment.IsDevelopment())
         {
-            return Problem(
-                detail: context.Error.StackTrace,
-                title: context.Error.Message);
+            return context is not null
+                ? Problem(detail: context.Error.StackTrace, title: context.Error.Message)
+                : Problem();
         }
-        else
-        {
-            return Problem();
-        }
+
+        // TODO: inject some interface that gets title, detail and status code from exception (context.Error)
+
+        return context is not null
+            ? Problem(detail: context.Error.StackTrace, title: context.Error.Message)
+            : Problem();
     }
+
 }
