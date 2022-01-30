@@ -26,7 +26,6 @@ public class ErrorController : ControllerBase
     [HttpGet]
     [Route("/error/{statusCode:int}")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    [IgnoreAntiforgeryToken]
     [ApiExplorerSettings(IgnoreApi = true)]
     public IActionResult HandleEndpointNotFound(int statusCode) =>
         Problem(statusCode: statusCode);
@@ -40,7 +39,6 @@ public class ErrorController : ControllerBase
     [HttpOptions]
     [Route("/error")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    [IgnoreAntiforgeryToken]
     [ApiExplorerSettings(IgnoreApi = true)]
     public IActionResult ErrorLocalDevelopment([FromServices] IWebHostEnvironment webHostEnvironment)
     {
