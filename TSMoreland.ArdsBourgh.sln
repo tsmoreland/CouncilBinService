@@ -62,6 +62,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AspNetCore", "AspNetCore", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tsmoreland.AspNetCore.Api.Diagnostics", "AspNetCore\Tsmoreland.AspNetCore.Api.Diagnostics\Tsmoreland.AspNetCore.Api.Diagnostics.csproj", "{3C47E7D1-47C4-46FD-87AA-6823D089C114}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSMoreland.AspNetCore.Diagnostics.Abstractions", "AspNetCore\TSMoreland.AspNetCore.Diagnostics.Abstractions\TSMoreland.AspNetCore.Diagnostics.Abstractions.csproj", "{53020D9E-95C4-4A3A-9655-23FA3CECEA3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +146,10 @@ Global
 		{3C47E7D1-47C4-46FD-87AA-6823D089C114}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C47E7D1-47C4-46FD-87AA-6823D089C114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C47E7D1-47C4-46FD-87AA-6823D089C114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53020D9E-95C4-4A3A-9655-23FA3CECEA3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53020D9E-95C4-4A3A-9655-23FA3CECEA3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53020D9E-95C4-4A3A-9655-23FA3CECEA3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53020D9E-95C4-4A3A-9655-23FA3CECEA3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -169,6 +175,7 @@ Global
 		{61DD5006-0902-4E94-930F-DA338602909F} = {109B32AC-3322-4723-8F03-7B1D4E981422}
 		{626FF5AB-B57D-4EC5-B7D3-A9D10623EEEA} = {EB10535E-DB2C-4F7F-BF6F-FA28C4D32A8C}
 		{3C47E7D1-47C4-46FD-87AA-6823D089C114} = {626FF5AB-B57D-4EC5-B7D3-A9D10623EEEA}
+		{53020D9E-95C4-4A3A-9655-23FA3CECEA3B} = {626FF5AB-B57D-4EC5-B7D3-A9D10623EEEA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ACF31183-C0A3-43FA-A43E-7F14F112DD1A}
