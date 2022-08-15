@@ -48,12 +48,18 @@ public sealed class InvalidModelStateException : Exception
     /// </summary>
     public ModelStateDictionary ModelState { get; }
 
-    [DoesNotReturn]
     [StackTraceHidden]
     public static void ThrowIfNotValid(ModelStateDictionary modelState, string? message = null)
     {
         ArgumentNullException.ThrowIfNull(modelState, nameof(modelState));
-        if (!modelState.IsValid)
+        ThrowModelStateExceptionIf(!modelState.IsValid, modelState, message);
+    }
+
+    
+    [StackTraceHidden]
+    private static void ThrowModelStateExceptionIf([DoesNotReturnIf(true)] bool @throw, ModelStateDictionary modelState, string? message = null)
+    {
+        if (@throw)
         {
             throw new InvalidModelStateException(modelState, message);
         }
