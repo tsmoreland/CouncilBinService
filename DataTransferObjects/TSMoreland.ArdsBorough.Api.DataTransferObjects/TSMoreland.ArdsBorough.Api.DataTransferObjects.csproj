@@ -10,7 +10,7 @@
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <Version>1.0.0</Version>
     <Description>Data Transfer Objects for use with TSMoreland.ArdsBorough.Api</Description>
-    <Copyright>Copyright © 2021 Terry Moreland</Copyright>
+    <Copyright>Copyright (c) 2021 Terry Moreland</Copyright>
     <Product>TSMoreland.GuardAssertions</Product>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageDescription>Guard Assertion and Validity Checks</PackageDescription>
